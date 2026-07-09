@@ -27,8 +27,3 @@ This repository contains my Oracle SQL practice from Beginner to Advanced.
 - Hospital Database
 - E-Commerce Database
 - Library Management System
-
-
-
----
-⭐ This repository is regularly updated as I continue learning Oracle SQL.
