@@ -1,0 +1,1274 @@
+-------------------------------
+ AUTHOR - Roshni Parmar 
+--------------------------------
+
+->  Projects
+
+- College Database
+- Banking Database
+- Hospital Database
+- E-Commerce Database
+- Library Management Database
+
+
+->  Topics Covered
+
+- CREATE TABLE
+- ALTER TABLE
+- DROP & TRUNCATE
+- INSERT
+- UPDATE
+- DELETE
+- SELECT
+- WHERE
+- ORDER BY
+- GROUP BY
+- Constraints
+- Set Operators
+- Interview Questions
+- Real-world Database Projects
+
+Advanced  Programming Questions
+
+1. Design College Database
+
+Create tables
+
+Student
+Course
+Faculty
+Department
+Enrollment
+
+using - Primary Key , Foreign Key , NOT NULL , UNIQUE ,CHECK
+
+2 . 
+CREATE TABLE stud(
+	stud_id NUMBER(5) PRIMARY KEY,
+	stud_name VARCHAR2(15) NOT NULL,
+	GENDER CHAR(1) CHECK (GENDER IN ('M','F')),
+	age NUMBER(2) CHECK (age BETWEEN 17 AND 35),
+	email VARCHAR2(15) UNIQUE,
+	phone VARCHAR2(15) UNIQUE,
+	dep_id NUMBER(3),
+	CONSTRAINT fk_stud_dep
+	FOREIGN KEY (dep_id)
+	REFERENCES dep(dep_id)
+);
+
+3 . 
+CREATE TABLE course(
+	course_id NUMBER(4) PRIMARY KEY,
+	course_name VARCHAR2(15) NOT NULL UNIQUE,
+	credits NUMBER(1) CHECK (credits BETWEEN 1 AND 6), -- doubt
+	dep_id NUMBER(3),
+	CONSTRAINT fk_course_dep
+	FOREIGN KEY (dep_id)
+	REFERENCES dep(dep_id)
+);
+
+4 . 
+CREATE TABLE faculty(
+	fac_id NUMBER(5) PRIMARY KEY,
+	fac_name VARCHAR2(15) NOT NULL,
+	email VARCHAR2(20) UNIQUE,
+	sal NUMBER(8,2) CHECK(sal>=30000),
+	dep_id NUMBER(3),
+	CONSTRAINT fk_fac_dep  -- doubt not getting 
+	FOREIGN KEY (dep_id)
+	REFERENCES dep(dep_id)	
+);
+
+1 . 
+CREATE TABLE dep(
+	dep_id INT PRIMARY KEY,
+	dep_name VARCHAR2(15) NOT NULL UNIQUE,
+	location VARCHAR2(20)
+);
+5 . 
+CREATE TABLE enroll(
+	enrol_id NUMBER(6) PRIMARY KEY,
+	stud_id NUMBER(5) NOT NULL,
+	course_id NUMBER(4) NOT NULL,
+	sem VARCHAR2(10) NOT NULL,
+	grade CHAR(2) CHECK (grade IN ('A','B','C','D')),
+	CONSTRAINT fk_enrol_stud
+	FOREIGN KEY (stud_id)
+	REFERENCES stud(stud_id),
+	CONSTRAINT fk_enrol_course
+	FOREIGN KEY (course_id)
+	REFERENCES course(course_id)
+);
+
+                Department
+               -------------
+               Dept_ID (PK)
+               Dept_Name
+               Location
+                    |
+       -----------------------------
+       |             |            |
+       |             |            |
+   Student        Faculty      Course
+   --------       --------      -------
+Student_ID(PK) Faculty_ID(PK) Course_ID(PK)
+Dept_ID(FK)   Dept_ID(FK)    Dept_ID(FK)
+       |
+       |
+       |
+   Enrollment
+   ------------
+Enrollment_ID(PK)
+Student_ID(FK)
+Course_ID(FK)
+Semester
+Grade
+
+
+-> alter table 
+
+1 . Add a column dob DATE in the Student table.
+
+ALTER TABLE stud ADD dob DATE;
+
+2 . Add a column joining_date DATE in Faculty.
+
+ALTER TABLE stud ADD joining_date DATE;
+
+3 . Modify course_name to store 50 characters.
+
+ALTER TABLE course MODIFY  course_name VARCHAR2(50);
+
+4 . Modify location so it becomes NOT NULL.  
+
+ALTER TABLE dep MODIFY location VARCHAR2(20)  NOT NULL;
+
+5 . Rename column fac_name to faculty_name.
+
+ALTER TABLE faculty RENAME COLUMN fac_name TO faculty_name;
+
+6 . Drop column phone from Student. 
+
+ALTER TABLE stud DROP COLUMN phone;
+
+7 . Add a CHECK constraint so salary cannot exceed 300000.
+
+ALTER TABLE faculty
+ADD CONSTRAINT chk_sal
+CHECK(sal<300000);
+
+
+8 . Add a UNIQUE constraint on Department location.
+
+ALTER TABLE dep  
+ADD CONSTRAINT uq_location
+UNIQUE(location);
+
+9 . Drop the UNIQUE constraint from Course Name.
+
+ALTER TABLE course DROP COLUMN course_name;
+
+10 . Enable a disabled CHECK constraint on Grade.
+
+ALTER TABLE enroll
+ENABLE CONSTRAINT chk_grade;
+
+11 . Disable the salary CHECK constraint.
+
+ALTER TABLE faculty 
+DISABLE CONSTRAINT chk_sal;
+
+12 . Rename table enroll to student_enrollment.
+
+RENAME enroll TO enroll_stud;
+
+( in case error occur like :- 
+SQL> RENAME enroll TO enroll_stud;
+RENAME enroll TO enroll_stud
+                 *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+
+then     .....................
+
+SQL> SELECT object_name, object_type
+  2  FROM user_objects
+  3  WHERE object_name = 'ENROLL_STUD';
+
+OBJECT_NAME
+--------------------------------------------------------------------------------
+OBJECT_TYPE
+-----------------------
+ENROLL_STUD
+TABLE
+
+)
+
+13 . Rename constraint fk_course_dep to fk_course_department.
+
+SQL> ALTER TABLE  course RENAME CONSTRAINT  fk_course_dep TO fk_course_deparatment;
+
+Table altered.
+
+14 . Increase the precision of salary from (8,2) to (10,2).
+
+ALTER TABLE faculty MODIFY sal NUMBER(10,2);
+
+15 . Add a column experience NUMBER(2) in Faculty with CHECK (experience >= 0).
+
+ALTER TABLE faculty ADD experience NUMBER(2) CHECK (experience >=0);
+
+-> insert 
+
+(1stly insert the values of all tables according to u how many values u want to insert insert then solvethe below query okkk else gonna error )
+
+Q5 Insert enrollment records where one student enrolls in multiple courses.
+
+INSERT INTO enroll VALUES(1,101,201,'Sem-1','A');
+INSERT INTO enroll VALUES(2,101,202,'Sem-1','B');
+INSERT INTO enroll VALUES(3,101,203,'Sem-1','A');
+
+
+1 . Insert a faculty record using only selected columns.
+
+INSERT INTO faculty(fac_id, faculty_name, sal)
+VALUES(101, 'Rahul', 55000);
+
+2 . Insert values using a subquery (e.g., copy department data into another table).
+
+have to create backup dep table 
+
+CREATE TABLE dep_backup(
+    dep_id NUMBER(3),
+    dep_name VARCHAR2(15),
+    location VARCHAR2(20)
+);
+
+Insert data into a backup table using INSERT INTO ... SELECT.
+
+
+insert into dep_backup  select *from dep;
+
+
+-> update 
+
+1 . Increase all faculty salaries by 12%.
+
+UPDATE faculty 
+SET sal=sal*1.12;
+
+2 . Increase credits by 1 for courses having less than 4 credits.
+
+UPDATE course
+SET credits=credits+1
+WHERE credits<4;
+
+3 . Change semester from Sem-1 to Semester-1.
+
+UPDATE enroll
+SET sem='semester1'
+WHERE sem='sem1';
+
+
+4 . Update grades from D to C for selected students.
+
+UPDATE enroll
+SET grade='c'
+WHERE grade='d';
+
+5 . Transfer all students from Department 101 to Department 102.
+
+UPDATE stud
+SET dep_id=102
+WHERE dep_id=101;
+
+6 . Update faculty salary only if salary is below 50000.
+
+UPDATE faculty
+SET sal=sal+50000
+WHERE sal<=50000;
+
+7 . Update email addresses by adding a new domain.
+
+UPDATE faculty 
+SET email=email || '.in'
+WHERE email LIKE '%.com';
+
+
+8 . Give a bonus of ₹5000 to faculty in the Computer department.
+
+UPDATE faculty 
+SET sal=sal+5000
+WHERE dep_name='csit';
+
+9 . Update grades using a subquery.
+
+UPDATE enroll
+SET grade = 'A'
+WHERE stud_id IN (
+    SELECT stud_id
+    FROM stud
+    WHERE dep_id = 101
+);
+
+
+10 . Update department location from one city to another.
+
+UPDATE dep
+SET location='mumbai'
+WHERE location='bhuj';
+
+-> select 
+
+1 . Display all faculty.
+
+SELECT *FROM faculty;
+
+2 . Show only student names and emails.
+
+SELECT stud_name,email FROM stud;
+
+3 . Display all Computer department courses.
+
+SELECT *FROM course WHERE dep=101;
+
+4 . Show students older than 20.
+
+SELECT *FROM stud WHERE age>20;
+
+5 . Display all unique semesters.
+
+SELECT DISTINCT sem FROM  enroll;
+
+
+-> WHERE
+1 . Students between ages 18 and 25.
+
+SELECT *FROM stud WHERE age BETWEEN 18 AND 25;
+
+2 . Faculty salary between 50000 and 90000.
+
+SELECT  *FROM faculty WHERE sal BETWEEN 50000 AND 90000;
+
+3 . Courses with credits greater than 3.
+
+SELECT *FROM course WHERE credits>3;
+
+4 . Students whose names start with R.
+
+SELECT stud_name FROM stud WHERE stud_name LIKE 'r%';
+
+5 . Faculty whose names end with n.
+
+SELECT stud_name FROM stud WHERE stud_name LIKE '%n';
+
+
+-> ORDER BY
+
+1 . Display students ordered by age descending.
+
+SELECT *FROM stud ORDER BY age DESC;
+
+2 . Display faculty ordered by salary ascending.
+
+SELECT *FROM faculty ORDER BY  sal ASC;
+
+
+
+2. Banking Database
+
+Create
+
+Customer
+Account
+Transaction
+Loan
+Branch
+
+Apply proper constraints.
+
+
+CREATE TABLE customer(
+	cust_id NUMBER(5) PRIMARY KEY,
+	cust_name VARCHAR2(20) NOT NULL,
+	gender CHAR(1) CHECK(gender IN('M','F')),
+	dob DATE,
+	phone NUMBER(15) UNIQUE,
+	email VARCHAR2(20) UNIQUE,
+	address VARCHAR2(25),
+	pan VARCHAR2(10) UNIQUE,
+	aadhar  VARCHAR2(12) UNIQUE
+);
+
+CREATE TABLE account(
+	acno NUMBER PRIMARY KEY,
+	cust_id NUMBER(5) NOT NULL,
+	acType VARCHAR2(10) CHECK(acType IN('saving','current')),
+	bal NUMBER CHECK(bal >=0),
+	opening DATE NOT NULL,
+	status VARCHAR2(10) CHECK(status IN('active','closed','blocked')),
+	CONSTRAINT fk_ac_cust
+	FOREIGN KEY (cust_id)
+	REFERENCES customer(cust_id)
+);
+
+CREATE TABLE transcation( 
+	tran_id NUMBER PRIMARY KEY,
+	acno NUMBER,
+	tran_date DATE,
+	tran_type VARCHAR2(15) CHECK(tran_type IN('credit','debit')),
+	amt NUMBER CHECK(amt>0),
+	payment_mode VARCHAR2(10) CHECK(payment_mode IN('online','cash','cheque')),
+	CONSTRAINT fk_tran_ac
+	FOREIGN KEY (acno)
+	REFERENCES account(acno)
+);
+
+CREATE TABLE loan(
+	loan_id NUMBER PRIMARY KEY,
+	cust_id NUMBER,
+	loan_type VARCHAR2(20) CHECK (loan_type IN('home','car','education','personal')),
+	loan_amt NUMBER CHECK(loan_amt>1000),
+	int_rate NUMBER CHECK(int_rate BETWEEN 1 AND 20),
+	loan_date DATE,
+	loan_status VARCHAR2(20) CHECK(loan_status IN('approved','pending','rejected')), 
+	CONSTRAINT fk_load_customer
+	FOREIGN KEY (cust_id)
+	REFERENCES customer(cust_id)
+);
+
+CREATE TABLE branch(
+	branch_id NUMBER(3) PRIMARY KEY,
+	branch_name VARCHAR2(20) NOT NULL,
+	branch_code  VARCHAR2(10) UNIQUE,
+	phone NUMBER(15) UNIQUE
+);
+
+
+-> ALTER 
+
+1 . Add a column nominee_name VARCHAR2(30) to the account table.
+
+ALTER TABLE account ADD nominee_name VARCHAR2(30);;
+
+2 . Add a column ifsc_code VARCHAR2(15) to the branch table.
+
+ALTER TABLE branch ADD ifsc_code VARCHAR2(15);
+
+3 . Modify the address column in customer to VARCHAR2(100).
+
+ALTER TABLE customer MODIFY address VARCHAR2(100);
+
+4 . Modify loan_amt to NUMBER(15,2).
+
+ALTER TABLE loan MODIFY loan_amt NUMBER(15,2);
+
+5 . Rename the column bal to available_balance.
+
+ALTER TABLE account RENAME COLUMN bal TO avaiable_bal;
+
+6 . Rename table loan to customer_loan.
+
+RENAME loan TO cust_loan;
+
+7 . Drop the column dob from customer.
+
+ALTER TABLE customer DROP COLUMN dob;
+
+8 . Add a CHECK constraint so available_balance cannot exceed 10000000.
+
+ALTER TABLE account 
+ADD CONSTRAINT chk_avaiable_bal
+CHECK(avaiable_bal<=10000000);
+
+9 . Add a UNIQUE constraint on branch_name.
+
+ALTER TABLE branch
+ADD CONSTRAINT uq_branch_name
+UNIQUE(branch_name);
+
+10 . Drop the UNIQUE constraint on email.
+
+ALTER TABLE customer
+DROP CONSTRAINT uq_email;
+
+11 . Disable the loan_status constraint.
+
+ALTER  TABLE loan DISABLE CONSTRAINT chk_loan_status;
+
+12 . Enable the loan_status constraint again.
+
+ALTER  TABLE loan ENABLE CONSTRAINT chk_loan_status;
+
+13 . Rename the foreign key fk_acc_customer to fk_account_customer.
+
+ALTER TABLE account RENAME COLUMN fk_acc_customer TO fk_account_customer;
+
+14 . Add a column last_transaction DATE to account.
+
+ALTER TABLE account ADD  last_transaction DATE;
+
+15 . Modify payment_mode to VARCHAR2(20).
+
+ALTER TABLE transcation MODIFY payment_mode VARCHAR2(20);
+
+-> INSERT 
+
+1 . Insert three branches.
+2 . Insert five customers with different PAN and Aadhaar values.
+3 . Insert accounts for all customers.
+4 . Insert one customer having two accounts.
+5 . Insert five transactions using different payment modes.
+6 . Insert two loans for the same customer.
+7 . Insert records using only selected columns.
+8 . Insert multiple branches using INSERT ALL.
+9 . Copy all approved loans into a backup table using INSERT INTO ... SELECT.
+10 . Insert a customer without an email address.
+
+-> UPDATE 
+
+1 . Increase all account balances by ₹2,000.
+
+UPDATE account 
+SET bal=bal+2000;
+
+2 . Add 1% interest to loans above ₹5,00,000.
+
+UPDATE loan
+SET int_rate=int_rate+1
+WHERE loan_amt>500000;  -- above 
+
+
+3 . Change all Pending loans to Approved.
+
+UPDATE loan 
+SET loan_status='approved'
+WHERE loan_status='pending';
+
+4 . Update all Cash payment modes to UPI.
+
+UPDATE transcation 
+SET payment_mode='UPI'
+WHERE payment_mode='cash';
+
+5 . Change the IFSC code of one branch.
+
+UPDATE TABLE branch
+SET ifsc='udyiew12344ljd'
+WHERE branch_id=1;
+
+6 . Update the nominee name for all active accounts.
+
+UPDATE account
+SET nominee_name = 'Riya Patel'
+WHERE status = 'active';
+
+7 . Increase balances only for Saving accounts.
+
+UPDATE TABLE account 
+SET bal=bal+5000
+WHERE acType='Saving';
+
+8 . Move customers from one branch to another by updating branch_id.
+
+UPDATE TABLE account 
+SET branch_id=102
+WHERE branch_id=101;
+
+9 . Update interest rates for Education loans only.
+
+UPDATE TBALE loan
+SET int_rate=int_rate+1
+WHERE loan_type='education';
+
+
+10 . Change all blocked accounts to active.
+
+UPDATE TABLE account
+SET status='active'
+WHERE status='blocked';
+
+
+-> SELECT 
+
+1 . Display all customers.
+
+SELECT *FROM customer;
+
+2 . Show account numbers and balances.
+
+SELECT acno,bal FROM account;
+
+3 . Display all active accounts.
+
+SELECT *FROM account WHERE status='active';
+
+4 . Show all approved loans.
+
+SELECT *FROM loan WHERE loan_status='approved';
+
+5 . Display all branches.
+
+SELECT *FROM branch;
+
+-> WHERE
+
+1 . Find customers born after 01-JAN-2000.
+
+SELECT *FROM customer 
+WHERE dob > TO_DATE('01-JAN-2000','DD-MM-YYYY');
+
+2 . Find accounts with balances above ₹1,00,000.
+
+SELECT  *FROM account WHERE bal>100000;
+
+3 . Display loans with interest rates between 6% and 10%.
+
+SELECT *FROM loan WHERE int_rate BETWEEN 6 AND 10;
+
+4 . Find transactions made through UPI.
+
+SELECT *FROM transaction WHERE payment_mode='UPI';
+
+5 . Display customers whose names start with S.
+
+SELECT cust_name FROM customer WHERE cust_name LIKE 'S%';
+
+-> ORDER BY 
+
+1 . Show accounts sorted by balance (highest first).
+
+SELECT *FROM account ORDER BY bal DESC; 
+
+2 . Show customers sorted alphabetically.
+
+SELECT *FROM customer ORDER BY cust_name ASC;
+
+
+
+3. Hospital Database
+
+Create
+
+Doctor
+Patient
+Appointment
+Medicine
+Billing
+
+Apply all relationships.
+
+
+CREATE TABLE doctor(
+	doctor_id NUMBER PRIMARY KEY,
+	doctor_name VARCHAR2(10) NOT NULL,
+	gender CHAR(1) CHECK(gender IN('M','F')),
+	specialization VARCHAR2(20) NOT NULL,
+	qualification VARCHAR2(20),
+	experience NUMBER(2) CHECK(experience >=0), 
+	phone VARCHAR2(10) UNIQUE,
+	email VARCHAR2(20) UNIQUE,
+	sal NUMBER(10,2) CHECK(sal>0),
+	dep VARCHAR2(10) NOT NULL,
+	joining_date DATE
+);
+
+
+CREATE TABLE patient(
+	patient_id NUMBER PRIMARY KEY,
+	patient_name VARCHAR2(20) NOT NULL,
+	gender CHAR(1) CHECK(gender IN('M','F')),
+	dob DATE,
+	age NUMBER(2) CHECK(age BETWEEN 1 AND 100),
+	blood_group CHAR(3) CHECK(blood_group IN('A+','A-','O-','O+','B+','B-','AB+','AB-')),
+	phone VARCHAR2(10) UNIQUE,
+	email VARCHAR2(20) UNIQUE,
+	address VARCHAR2(20),
+	doctor_id NUMBER,
+	
+	CONSTRAINT fk_patient_doctor
+	FOREIGN KEY (doctor_id)
+	REFERENCES doctor(doctor_id)
+);
+
+CREATE TABLE appointment(
+	app_id NUMBER PRIMARY KEY,
+	patient_id NUMBER NOT NULL,
+	doctor_id NUMBER NOT NULL,
+	app_date DATE NOT NULL,
+	app_time TIMESTAMP NOT NULL,
+	app_status VARCHAR2(10) CHECK(app_status IN('scheduled','completed','cancelled')),
+	consulation_fee NUMBER CHECK(consulation_fee>=0),
+	
+	CONSTRAINT fk_app_patient
+	FOREIGN KEY (patient_id)
+	REFERENCES patient(patient_id),
+	
+	CONSTRAINT fk_app_doctor
+	FOREIGN KEY (doctor_id)
+	REFERENCES doctor(doctor_id)
+	
+);
+
+CREATE TABLE medicine(
+	med_id NUMBER PRIMARY KEY,
+	med_name VARCHAR2(20) NOT NULL,
+	med_type VARCHAR2(20) CHECK(med_type in('tablet','syrup','injection','capsule')),
+	manuf VARCHAR2(20),
+	price NUMBER CHECK(price>0),
+	stock_qty NUMBER CHECK(stock_qty>=0),
+	expiry_date DATE NOT NULL
+);
+
+CREATE TABLE billing(
+	bill_id NUMBER PRIMARY KEY,
+	patient_id NUMBER,
+	app_id NUMBER,
+	bill_date DATE NOT NULL,
+	consulation_charge NUMBER CHECK(consulation_chare>=0),
+	med_charge NUMBER CHECK(med_charge>=0),
+	total_amt NUMBER CHECK(total_amt>=0),
+	pay_method VARCHAR2(10) CHECK(pay_method IN('cash','online','card','upi')),
+	pay_status VARCHAR2(10) CHECK(pay_status in('paid','pending')),
+	
+	CONSTRAINT fk_billing_patient
+	FOREIGN KEY (patient_id)
+	REFERENCES patient(patient_id),
+	
+	CONSTRAINT fk_billing_appointment
+	FOREIGN KEY (app_id)
+	REFERENCES appointment(app_id)
+);
+
+Relationships to Apply
+Doctor (1) → (Many) Patient
+Doctor ID in Patient is a Foreign Key.
+Doctor (1) → (Many) Appointment
+Doctor ID in Appointment is a Foreign Key.
+Patient (1) → (Many) Appointment
+Patient ID in Appointment is a Foreign Key.
+Patient (1) → (Many) Billing
+Patient ID in Billing is a Foreign Key.
+Appointment (1) → (1 or Many) Billing
+Appointment ID in Billing is a Foreign Key.
+
+-> ALTER TABLE
+1 . Add a license_no VARCHAR2(20) column to the doctor table.
+
+ALTER TABLE doctor ADD license_no VARCHAR2(20);
+
+2 . Add an emergency_contact VARCHAR2(15) column to the patient table.
+
+ALTER TABLE patient ADD emergency_contact VARCHAR2(15);
+
+3 . Modify doctor_name to VARCHAR2(50).
+
+ALTER TABLE doctor MODIFY doctor_name VARCHAR2(50);
+
+4 . Modify price in medicine to NUMBER(8,2).
+
+ALTER TABLE medicine MODIFY price NUMBER(8,2);
+
+5 . Rename the column manuf to manufacturer.
+
+ALTER TABLE medicine RENAME COLUMN manuf TO manufacturer;
+
+6 . Rename the billing table to hospital_billing.
+
+RENAME billing TO hospital_billing;
+
+7 . Drop the qualification column from doctor.
+
+ALTER TABLE doctor DROP COLUMN qualification;
+
+8 . Add a CHECK constraint so experience cannot exceed 45 years.
+
+ALTER TABLE doctor 
+ADD CONSTRAINT chk_exp
+CHECK(experience<=45);
+
+9 . Add a DEFAULT 'Pending' value to pay_status.
+
+ALTER TABLE billing MODIFY pay_status DEFAULT 'pending';
+
+10 . Add a UNIQUE constraint on license_no.
+
+ALTER TABLE doctor 
+ADD CONSTRAINT uq_license_no
+UNIQUE(license_no);
+
+11 . Drop the UNIQUE constraint from email in patient.
+
+ALTER TABLE patient DROP CONSTRAINT uq_email;
+
+12 . Disable the pay_status constraint.
+
+ALTER TABLE billing DISABLE CONSTRAINT  chk_pay_status;
+
+13 . Enable the pay_status constraint again.
+
+ALTER TABLE billing ENABLE CONSTRAINT  chk_pay_status;
+
+14 . Rename the foreign key fk_billing_patient to fk_bill_patient.
+
+-- skip cause easy 
+
+15 . Add a discount NUMBER(6,2) column to billing.
+
+ALTER TABLE billing ADD  discount NUMBER(6,2);
+
+
+-> INSERT Practice
+1 . Insert three doctors with different specializations.
+2 . Insert five patients under different doctors.
+3 . Insert appointments for each patient.
+4 . Insert medicines with different expiry dates.
+5 . Insert billing records for completed appointments.
+6 . Insert one patient without an email address.
+7 . Insert a doctor using only mandatory columns.
+8 . Insert multiple medicines using INSERT ALL.
+9 . Copy all expired medicines into a backup table using INSERT INTO ... SELECT.
+10 . Insert a patient who has multiple appointments.
+
+
+
+-> UPDATE Practice
+1 . Increase the salary of all cardiologists by 10%.
+
+UPDATE doctor 
+SET sal=sal*1.10
+WHERE specialization='cardiologists';
+
+2 . Change the department name for selected doctors.
+
+UPDATE doctor
+SET dep='Neurology'
+WHERE doctor_id=101;
+
+3 . Update appointment status from Scheduled to Completed.
+
+UPDATE appoinment 
+SET app_status='completed'
+WHERE app_status='scheduled';
+
+4 . Increase medicine prices by 5%.
+
+UPDATE medicine 
+SET price=price*1.05;
+
+5 . Reduce medicine stock after a prescription.
+
+UPDATE medicine
+SET stock_qty=stock_qty-5
+WHERE med_id=101;
+
+6 . Update the payment method from Cash to UPI.
+
+UPDATE billing
+SET pay_method='UPI'
+WHERE pay_method='cash';
+
+7 . Mark all pending bills as paid.
+
+UPDATE billing
+SET pay_status='paid'
+WHERE pay_status='pending';
+
+8 . Change a patient's assigned doctor.
+
+UPDATE  patient
+SET doctor_id=102
+WHERE patient_id=1001; -- values according to insert values
+
+9 . Increase consultation fees for appointments after a given date.
+
+UPDATE TABLE appoinment 
+SET consulation_fees=consulation+100
+WHERE app_date > TO_DATE('01-JAN-2000' , 'DD-MON-YYYY');  -- remember MON takes JAN 
+
+10 . Update manufacturer names for medicines from a specific company.
+
+UPDATE medicine
+SET manufacturer = 'Sun Pharma'
+WHERE manufacturer = 'ABC Pharma';
+
+
+
+-> SELECT Practice
+
+1 . Display all doctors.
+
+SELECT *FROM doctor;
+
+2 . Show patient names and blood groups.
+
+SELECT patient_name , blood_group FROM patient; 
+
+3 . Display all available medicines.
+
+SELECT *FROM medicine WHERE stock_qty>0;
+
+4 . Show completed appointments.
+
+SELECT app_status FROM  appointment WHERE app_status='completed';
+
+5 . Display all unpaid bills.
+
+SELECT pay_status FROM billing WHERE pay_status='pending';
+
+
+-> WHERE
+
+1 . Find doctors with more than 10 years of experience.
+
+SELECT experience FROM doctor WHERE experience>10;
+
+2 . Find medicines costing more than ₹500.
+
+SELECT price FROM medicine WHERE price>500;
+
+3 . Display patients with blood group O+.
+
+SELECT blood_group FROM patient WHERE blood_group='O+';
+
+4 . Show appointments scheduled today.
+
+SELECT app_status FROM appointment WHERE app_status='scheduled';
+
+5 . Find doctors whose names start with A.
+
+SELECT  doctor_name FROM  doctor  WHERE doctor_name LIKE 'A%';
+
+
+-> ORDER BY
+
+1 . Display doctors sorted by salary (highest first).
+
+SELECT sal FROM doctor ORDER BY sal DESC;
+
+2 . Display medicines sorted by expiry date.
+
+SELECT expiry_date  FROM medicine ORDER BY expiry_date ASC;
+
+4. E-Commerce Database
+
+Create
+
+Customer
+Orders
+Product
+Category
+Supplier
+Order_Items
+
+Use foreign keys.
+
+
+CREATE TABLE customer(
+	cust_id NUMBER PRIMARY KEY,
+	fn VARCHAR2(10) NOT NULL,
+	ln VARCHAR2(10) NOT NULL,
+	gender CHAR(1) CHECK(gender IN ('M','F')),
+	dob DATE,
+	email VARCHAR2(20) UNIQUE,
+	phone VARCHAR2(10) UNIQUE,
+	address VARCHAR2(20),
+	city VARCHAR2(10),
+	state VARCHAR2(10),
+	pin_code NUMBER(6) CHECK(pin_code BETWEEN 100000 AND 999999),
+	registration_date DATE NOT NULL
+);
+
+CREATE TABLE orders(
+	order_id NUMBER PRIMARY KEY,
+	cust_id NUMBER NOT NULL,
+	order_date DATE NOT NULL,
+	order_status VARCHAR2(10)  CHECK(order_status in('pending','confirmed','packed','shipped','delivered','cancelled')),
+	pay_method VARCHAR2(10) CHECK(pay_method in('cash','card','upi','netbanking')),
+	shipping_add VARCHAR2(10) NOT NULL,
+	total_amt NUMBER CHECK(total_amt>=0),
+	
+	CONSTRAINT fk_order_cust
+	FOREIGN KEY (cust_id)
+	REFERENCES customer(cust_id)
+	
+);
+
+CREATE TABLE product(
+	prod_id NUMBER PRIMARY KEY,
+	prod_name VARCHAR2(10) NOT NULL,
+	prod_price NUMBER CHECK(prod_price>=0),
+	stock_qty NUMBER CHECK(stock_qty>=0),
+	category_id NUMBER,
+	supplier_id NUMBER,
+	
+	CONSTRAINT fk_prod_category 
+	FOREIGN KEY (category_id)
+	REFERENCES category(category_id),
+	
+	CONSTRAINT fk_prod_supplier 
+	FOREIGN KEY (supplier_id)
+	REFERENCES supplier(supplier_id)
+	
+);
+
+CREATE TABLE category(
+	category_id NUMBER PRIMARY KEY,
+	category_name VARCHAR2(10) NOT NULL,
+	category_descrip VARCHAR2(10)
+);
+
+CREATE TABLE supplier(
+	supplier_id NUMBER PRIMARY KEY,
+	supplier_name VARCHAR2(10) NOT NULL,
+	contact VARCHAR2(10) UNIQUE,
+	email VARCHAR2(20) UNIQUE,
+	add VARCHAR2(20),
+	city VARCHAR2(10)
+);
+
+CREATE TABLE order_item(
+	ord_item_id NUMBER PRIMARY KEY,
+	order_id NUMBER,
+	prod_id NUMBER,
+	qty NUMBER CHECK(qty>0),
+	unit_price NUMBER CHECK(unit_price>0),
+	disc NUMBER CHECK(disc BETWEEN 0 AND 100),
+	subtotal NUMBER CHECK(subtotal>0),
+	
+	CONSTRAINT fk_order_item_order
+	FOREIGN KEY (order_id)
+	REFERENCES orders(order_id),
+	
+	CONSTRAINT fk_orderitem_product
+	FOREIGN KEY (prod_id)
+	REFERENCES product(prod_id)
+);
+
+Relationships to Apply
+Customer (1) → (Many) Orders
+Customer ID in Orders is a Foreign Key.
+Orders (1) → (Many) Order_Items
+Order ID in Order_Items is a Foreign Key.
+Product (1) → (Many) Order_Items
+Product ID in Order_Items is a Foreign Key.
+Category (1) → (Many) Product
+Category ID in Product is a Foreign Key.
+Supplier (1) → (Many) Product
+Supplier ID in Product is a Foreign Key.
+
+-> ALTER TABLE
+1 . Add a brand_name VARCHAR2(30) column to the product table.
+
+ALTER TABLE product ADD brand_name VARCHAR2(30);
+
+2 . Add a GST_Number VARCHAR2(20) column to the supplier table.
+
+ALTER TABLE supplier ADD GST_NUMBER VARCHAR2(20);
+
+3 . Modify shipping_add to VARCHAR2(200).
+
+ALTER TABLE orders MODIFY shipping_add VARCHAR2(200);
+
+4 . Modify prod_price to NUMBER(12,2).
+
+ALTER TABLE product MODIFY prod_price NUMBER(12,2);
+
+5 . Rename the column disc to discount_percent.
+
+ALTER TABLE order_item RENAME COLUMN disc TO discount_percent;
+
+6 . Rename the table orders to customer_orders.
+
+RENAME orders TO customer_orders;
+
+7 . Drop the city column from supplier.
+
+ALTER TABLE supplier DROP COLUMN city;
+
+8 . Add a CHECK constraint so stock_qty cannot exceed 5000.
+
+ALTER TABLE product
+ADD CONSTRAINT chk_stock_qty
+CHECK(stock_qty<=5000);
+
+9 . Add a DEFAULT 'Pending' value to order_status.
+
+ALTER TABLE order MODIFY order_status DEFAULT 'pending';
+
+10 . Add a UNIQUE constraint on brand_name.
+
+ALTER TABLE product
+ADD CONSTRAINT uq_brand_name
+UNIQUE(brand_name);
+
+11 . Drop the UNIQUE constraint from supplier.email.
+
+ALTER TABLE supplier 
+DROP CONSTRAINT uq_supplier_email;
+
+12 . Disable the CHECK constraint on discount_percent.
+
+ALTER TABLE order_item DISABLE CONSTRAINT chk_disc;
+
+13 . Enable the disabled CHECK constraint again.
+
+ALTER TABLE order_item ENABLE CONSTRAINT chk_disc;
+
+14 . Rename the foreign key fk_prod_supplier to fk_product_supplier.
+
+-- skip 
+
+15 . Add a weight NUMBER(6,2) column to the product table.
+
+ALTER TABLE product ADD weight NUMBER(6,2);
+
+
+-> INSERT Practice
+1 . Insert three product categories.
+2 . Insert four suppliers from different cities.
+3 . Insert five customers with different registration dates.
+4 . Insert products supplied by different suppliers.
+5 . Insert multiple products using INSERT ALL.
+6 . Insert one customer without a phone number.
+7 . Insert an order containing three different products.
+8 . Insert order items with different discounts.
+9 . Copy all products priced above ₹50,000 into a premium product table using INSERT INTO ... SELECT.
+10 . Insert a supplier using only mandatory columns.
+
+
+-> UPDATE Practice
+1 . Increase the price of all electronics by 8%.
+
+UPDATE porduct
+SET prod_price=prod_price*1.08
+WHERE prod_name='electronics';
+
+2 . Reduce the stock quantity of products after an order.
+
+UPDATE product
+SET stock_qty=stock_qty-1
+WHERE prod_id=101;
+
+3 . Change all Pending orders to Confirmed.
+
+UPDATE orders
+SET order_status='confirmed'
+WHERE order_status='pending';
+
+4 . Update the payment method from Cash to UPI.
+
+UPDATE orders
+SET pay_method='UPI'
+WHERE pay_method='cash';
+
+5 . Change the supplier for selected products.
+
+UPDATE product
+SET suplier_id=102
+WHERE product_id=101;
+
+6 . Increase discounts on products costing more than ₹10,000.
+
+UPDATE order_item
+SET disc = disc + 5
+WHERE prod_id IN (
+    SELECT prod_id
+    FROM product
+    WHERE prod_price > 10000
+);
+
+7 . Update customer addresses after a city name change.
+
+UPDATE customer
+SET city = 'Gandhinagar'
+WHERE city = 'Ahmedabad';
+
+8 . Restock products with stock below 20 units.
+
+UPDATE product
+SET stock_qty = 100
+WHERE stock_qty < 20;
+
+9 . Update product brands for a specific category.
+
+UPDATE product
+SET brand_name = 'Samsung'
+WHERE category_id = 1;
+
+10 . Change the order status from Shipped to Delivered for orders before a given date.
+
+UPDATE orders
+SET order_status = 'delivered'
+WHERE order_status = 'shipped'
+AND order_date < TO_DATE('01-JAN-2026','DD-MON-YYYY');
+
+
+-> SELECT Practice
+
+1 . Display all products.
+
+SELECT *FROM product;
+
+2 . Show customer names with email addresses.
+
+SELECT fname,lname,email FROM customer;
+
+3 . Display all suppliers.
+
+SELECT *FROM supplier;
+
+4 . Show products with stock greater than 100.
+
+SELECT stock_qty FROM product WHERE stock_qty>100;
+
+5 . Display all delivered orders.
+
+SELECT *FROM orders WHERE order_status='delivered';
+
+
+-> WHERE
+1 . Find products priced above ₹5,000.
+
+SELECT prod_price FROM product WHERE prod_price<=5000;
+
+2 . Find customers registered after 01-JAN-2025.
+
+SELECT *FROM customer
+WHERE registration_date > TO_DATE('01-JAN-2025','DD-MON-YYYY');
+
+3 . Display suppliers from Ahmedabad.
+
+SELECT *FROM supplier WHERE city = 'Ahmedabad';
+
+4 . Show products whose names start with S.
+
+SELECT prod_name FROM product WHERE prod_name LIKE 'S%';
+
+5 . Display orders paid through UPI.
+
+SELECT pay_method FROM orders WHERE pay_method='UPI';
+
+
+-> ORDER BY
+
+1 . Display products sorted by price (highest first).
+
+SELECT prod_price FROM product ORDER BY prod_price DESC;
+
+2 . Display customers sorted by registration date.
+
+SELECT * FROM customer ORDER BY registration_date ASC;
+
+
+5. Library Management  -- do it by your own 
+
+Create
+
+Books
+Authors
+Members
+Issue_Book
+Return_Book
+
+Apply all keys.
