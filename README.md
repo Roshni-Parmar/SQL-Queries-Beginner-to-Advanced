@@ -28,9 +28,7 @@ This repository contains my Oracle SQL practice from Beginner to Advanced.
 - E-Commerce Database
 - Library Management System
 
-## Database
 
-Oracle Database 21c XE
 
 ---
 ⭐ This repository is regularly updated as I continue learning Oracle SQL.
