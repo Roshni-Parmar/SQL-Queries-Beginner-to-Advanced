@@ -1,4 +1,36 @@
-# SQL-Queries-Beginner-to-Advanced
-Oracle SQL practice from beginner to advanced, including DDL, DML, DQL, DCL, TCL, PL/SQL, and database projects.
-Every Topic Individual Cover basic To Advanced 
-Every Individual Topic Queries Basic - Intermediate - advanced - INTERVIEW related Queries 
+# SQL Queries: Beginner to Advanced
+
+This repository contains my Oracle SQL practice from Beginner to Advanced.
+
+## Topics Covered
+
+- DDL (CREATE, ALTER, DROP, TRUNCATE)
+- DML (INSERT, UPDATE, DELETE, MERGE)
+- DQL (SELECT)
+- DCL (GRANT, REVOKE)
+- TCL (COMMIT, ROLLBACK, SAVEPOINT)
+- Constraints
+- Joins
+- Subqueries
+- Functions
+- Views
+- Sequences
+- Indexes
+- PL/SQL
+- Database Projects
+- SQL Interview Questions
+
+## Projects
+
+- College Database
+- Banking Database
+- Hospital Database
+- E-Commerce Database
+- Library Management System
+
+## Database
+
+Oracle Database 21c XE
+
+---
+⭐ This repository is regularly updated as I continue learning Oracle SQL.
