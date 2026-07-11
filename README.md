@@ -27,3 +27,20 @@ This repository contains my Oracle SQL practice from Beginner to Advanced.
 - Hospital Database
 - E-Commerce Database
 - Library Management System
+
+## SQL Operators
+
+- Comparison Operators (=, !=, <>, >, <, >=, <=)
+- Logical Operators (AND, OR, NOT)
+- Arithmetic Operators (+, -, *, /, MOD)
+- Set Operators (UNION, UNION ALL, INTERSECT, MINUS)
+- Special Operators
+  - IN
+  - NOT IN
+  - BETWEEN
+  - NOT BETWEEN
+  - LIKE
+  - EXISTS
+  - NOT EXISTS
+  - ANY
+  - ALL
