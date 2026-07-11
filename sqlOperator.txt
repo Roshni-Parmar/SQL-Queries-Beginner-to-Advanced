@@ -1,0 +1,2981 @@
+// sql :- OPERATORS  SQL Practice (Beginner TO Advanced)
+--------------------------------------------------------------------------------
+AUTHOR :- ROSHNI PARMAR 
+--------------------------------------------------------------------------------
+
+Data Science + SQL interviews, here is a complete OPERATORS SQL practice roadmap 
+from Beginner to  Advanced ,  including interview-style questions.
+
+I have cover the following operators :- 
+
+1 . logical operator
+2 . special operator
+3 . set operator 
+4 . comparison operator
+5 . arithmetic operator 
+
+--------------------------------------------------------------------------------
+(NOTE - i have solve queries according to my table data and insert values so while u are solving queries remember to insert data values and the solve queries according to your table data)
+
+
+logical op - and , or , not 
+
+------------------- ***Beginner*** -----------------------------
+---> BETWEEN
+
+Q1. Display employees whose salary is between 30,000 and 50,000.
+
+SELECT *FROM emp WHERE sal BETWEEN 30000 AND 50000;
+
+Q2. Display products whose price is between 100 and 500.
+
+SELECT  *FROM product WHERE price BETWEEN 100 AND 500;
+
+Q3. Display employees hired between 01-Jan-2022 and 31-Dec-2022.
+
+SELECT hired FROM emp WHERE hired BETWEEN TO_DATE('01-JAN-2022','DD-MON-YYYY') AND TO_DATE('31-Dec-2022','DD-MON-YYYY');
+
+Q4. Display students whose marks are between 70 and 90.
+
+SELECT *FROM stud WHERE marks BETWEEN 70 AND 90;
+
+Q5. Display orders placed between two given dates.
+
+SELECT *FROM orders WHERE orders_date BETWEEN TO_DATE('01-JAN-2022','DD-MON-YYYY') AND TO_DATE('31-Dec-2022','DD-MON-YYYY'); 
+
+or 
+
+SELECT *FROM orders WHERE order_date BETWEEN :start_date AND :end_date;  -- use place holders
+
+-------------------------------------------------------------------------------------
+
+--> NOT BETWEEN
+
+Q6. Display employees whose salary is not between 30,000 and 50,000.
+
+SELECT *FROM emp WHERE sal NOT BETWEEN 30000 AND 50000;
+
+Q7. Display products whose price is not between 100 and 500.
+
+SELECT *FROM product WHERE price NOT BETWEEN 100 AND 500;
+
+Q8. Display employees hired before 2022 or after 2023.
+
+SELECT *FROM emp WHERE hired  NOT BETWEEN TO_DATE('01-JAN-2022','DD-MON-YYYY') AND TO_DATE('31-Dec-2022','DD-MON-YYYY');
+
+------------------------------------------------------------------------------------------
+
+--> IN
+
+Q9. Display employees working in IT, HR, and Finance departments.
+
+SELECT *FROM emp WHERE dep IN ('IT','HR','Finance');
+
+Q10. Display customers from Mumbai, Delhi, and Pune.
+
+SELECT *FROM customer WHERE city IN('Mumbai','Delhi','Pune');
+
+Q11. Display students belonging to A, B, and C divisions.
+
+SELECT *FROM stud WHERE div IN ('A','B','C');
+
+Q12. Display products belonging to category IDs 1, 3, 5, and 7.
+
+SELECT *FROM product WHERE category_ID  IN(1,3,5,7);
+
+
+---------------------------------------------------------------------------------------------
+
+--> NOT IN
+
+Q13. Display employees who are not in the IT department.
+
+SELECT *FROM emp WHERE dep NOT IN ('IT');
+
+Q14. Display customers who are not from Mumbai or Delhi.
+
+SELECT *FROM customers WHERES city NOT IN ('Mumbai','Delhi');
+
+Q15. Display products whose category is not Electronics or Clothing.
+
+SELECT *FROM product WHERE category NOT IN ('Electronics','Clothing');
+
+-------------------------------------------------------------------------------------------------
+
+--> LIKE
+
+Q16. Display employee names starting with A.
+
+SELECT *FROM emp WHERE names LIKE 'A%';
+
+Q17. Display employee names ending with n.
+
+SELECT *FROM emp WHERE names LIKE '%n';
+
+Q18. Display employee names containing ar.
+
+SELECT *FROM emp WHERE names LIKE '%ar%';
+
+Q19. Display employee names whose second letter is a.
+
+SELECT *FROM emp WHERE names LIKE '_a%';
+
+Q20. Display employee names having exactly five characters.
+
+SELECT *FROM emp WHERE names LIKE '_____';  -- 5 underscore ***
+
+Q21. Display emails ending with gmail.com.
+
+SELECT *FROM emp WHERE emails LIKE '%@gmail.com';
+
+Q22. Display phone numbers starting with 98.
+
+SELECT *FROM emp WHERE phone LIKE '98%';
+
+-------------------------------------------------------------------------------------------------------
+
+--> Intermediate - IN + Subquery
+
+Q23. Display employees working in departments located in Mumbai.
+
+SELECT * FROM emp 
+WHERE dep IN(
+				SELECT dep
+				FROM emp
+				WHERE city='Mumbai'
+
+);
+
+Q24. Display customers who placed at least one order.
+
+SELECT *FROM customers
+WHERE cust_id IN(
+					SELECT cust_id FROM orders  -- 2 table customer and orders table
+				);
+
+Q25. Display products ordered by customer ID 101.
+
+Assume these tables:
+
+product(prod_id, product_name)
+orders(cust_id, prod_id)
+
+SELECT *FROM product
+WHERE prod_id IN(
+					SELECT prod_id
+					FROM orders
+					WHERE cust_id=101
+				);
+
+--------------------------------------------------------------------------------------------------------
+
+--> NOT IN + Subquery
+
+Q26. Display customers who have never placed an order.
+
+SELECT *FROM customer 
+WHERE cust_id NOT IN(
+						SELECT cust_id
+						FROM orders
+					);
+		
+
+Q27. Display products that have never been ordered.
+
+SELECT *FROM product 
+WHERE prod_id NOT IN (
+						SELECT prod_id
+						FROM orders
+					);
+
+Q28. Display departments without employees.
+
+
+SELECT *FROM dep
+WHERE dep_id NOT IN (
+						SELECT dep_id
+						FROM emp
+					);
+					
+---------------------------------------------------------------------------------------------------------
+
+EXISTS  -- DOUBT HOW WOULD I KNOW WHEN TO USE EXIST 
+
+Q29. Display customers who have placed at least one order.
+
+SELECT *FROM customer c
+WHERE EXISTS (
+				SELECT 1
+				FROM orders o
+				WHERE o.cust_id=c.cust_id
+			);
+
+
+Q30. Display employees who are assigned to at least one project.
+
+SELECT *FROM emp e
+WHERE EXISTS (
+				SELECT 1
+				FROM project p
+				WHERE p.emp_id=e.emp_id
+			);
+
+Q31. Display departments having employees.
+
+SELECT *FROM dep d
+WHERE EXISTS (
+				SELECT 1 
+				FROM emp e
+				WHERE e.dep_id=d.dep_id
+			);
+
+Q32. Display suppliers supplying at least one product.
+
+SELECT *FROM supplier s
+WHERE EXISTS (
+				SELECT 1
+				FROM product p
+				WHERE p.supplier_id=s.supplier_id
+			);
+
+-------------------------------------------------------------------------------------------------------------
+
+--> NOT EXISTS
+
+Q33. Display customers who never placed an order.
+
+SELECT *FROM customer c
+WHERE NOT EXSITS(
+					SELECT 1
+					FROM orders o
+					WHERE o.cust_id=c.cust_id
+				);
+
+Q34. Display employees without projects.
+
+SELECT *FROM emp e
+WHERE NOT EXISTS (
+					SELECT 1
+					FROM project p
+					WHERE p.emp_id=e.emp_id
+				);
+
+Q35. Display departments having no employees.
+
+SELECT *FROM dep d
+WHERE NOT EXISTS(
+					SELECT 1
+					FROM emp e
+					WHERE e.dep_id=d.dep_id
+				);
+
+-----------------------------------------------------------------------------------------------------------------
+
+--> ANY
+
+Q36. Display employees earning more than any employee in the HR department.
+
+SELECT *FROM emp 
+WHERE sal>  ANY (
+					SELECT sal FROM emp 
+					WHERE dep='HR'
+				);
+
+
+Q37. Display products priced higher than any product in Category 1.
+
+SELECT *FROM product 
+WHERE price> ANY (
+					SELECT price FROM product
+					WHERE category=1
+				);
+
+Q38. Display students scoring higher than any student in Section A.
+
+SELECT *FROM stud 
+WHERE score> ANY(
+					SELECT score FROM stud
+					WHERE section='A'
+				);
+
+-----------------------------------------------------------------------------------------------------------------
+
+--> ALL
+
+Q39. Display employees earning more than all employees in HR.
+
+SELECT *FROM emp 
+WHERE sal> ALL(
+				SELECT sal FROM emp
+				WHERE dep='HR'
+			);
+
+Q40. Display products costlier than all products in Category 2.
+
+SELECT *FROM product 
+WHERE cost> ALL(
+					SELECT cost FROM product 
+					WHERE category=2
+				);
+
+Q41. Display students scoring higher than all students in Section B.
+
+SELECT *FROM stud
+WHERE score> ALL(
+					SELECT score FROM stud
+					WHERE section='B'
+				);
+
+-----------------------------------------------------------------------------------------------------------------------
+
+                                            -->  Advanced (Interview Level) - EXISTS vs IN
+
+Q42. Find customers who placed orders using IN.
+
+SELECT *FROM customer 
+WHERE cust_id IN(
+					SELECT cust_id FROM orders
+				);
+
+Q43. Solve the same problem using EXISTS.
+
+SELECT *FROM customer c
+WHERE EXISTS (
+				SELECT 1 FROM orders o
+				WHERE o.cust_id=c.cust_id
+			);
+
+Q44. Compare both approaches and identify which is better for large datasets.
+
+ANY vs ALL
+
+-> IN - Simpler , Good for small datasets
+
+-> EXISTS - Better for large datasets
+		Stops searching after first match
+		Preferred in interviews
+
+
+Q45. Find employees earning more than any manager.
+
+SELECT *FROM emp
+WHERE sal> ANY(
+				SELECT sal FROM emp
+				WHERE dep='manager'
+			);
+
+Q46. Find employees earning more than all managers.
+
+
+SELECT *FROM emp
+WHERE sal> ALL(
+				SELECT sal FROM emp
+				WHERE dep='manager'
+			);
+
+Q47. Display employees whose department is in departments located in Mumbai and whose salary is between 50,000 and 80,000.
+
+SELECT *FROM emp
+WHERE dep_id IN (
+					SELECT dep_id FROM dep
+					WHERE city='Mumbai'
+				)
+AND sal BETWEEN 50000 AND 80000;
+				
+Q48. Display customers whose city starts with A and who have never placed an order.
+
+SELECT *FROM customers c 
+WHERE city LIKE 'A%' 
+AND NOT EXISTS (
+				   SELECT 1 FROM oders o 
+				   WHERE o.cust_id=c.cust_id
+				);
+
+Q49. Display products whose price is not between 100 and 500 and whose category is not Electronics.
+
+SELECT *FROM product
+WHERE Price NOT IN BETWEEN 100 AND 500 
+AND category <> 'Electronics'; -- != also used 
+										
+Q50. Display employees whose name starts with S, salary is between 40,000 and 80,000, and department is either IT or HR.
+
+SELECT *FROM emp
+WHERE names LIKE 'S%' 
+AND sal BETWEEN 40000 AND 80000
+AND dep IN ('IT','HR');
+
+										--> Multi-level Subqueries
+
+Q51. Display employees working in departments managed by managers whose salary is greater than 80,000.
+
+SELECT *FROM emp
+WHERE dep_id IN(
+				SELECT dep_id FROM dep 
+				WHERE manager_id IN( 
+										SELECT emp_id
+										FROM emp
+										WHERE sal>80000
+									)
+				);
+
+Q52. Display customers who ordered products supplied by suppliers located in Gujarat.
+
+SELECT *
+FROM customer
+WHERE cust_id IN (
+    SELECT cust_id
+    FROM orders
+    WHERE prod_id IN (
+        SELECT prod_id
+        FROM product
+        WHERE supplier_id IN (
+            SELECT supplier_id
+            FROM supplier
+            WHERE state='Gujarat'
+        )
+    )
+);
+
+
+Q53. Display students enrolled in courses taught by professors working in the Computer Science department.
+
+SELECT *FROM stud 
+WHERE course_id IN(
+					SELECT course_id 
+					FROM course
+					WHERE prof_id IN(
+										SELECT prof_id
+										FROM professor
+										WHERE dep='computer sci'
+									)
+				   );
+
+
+										--> Real Interview Questions
+
+Q54. Find customers who have ordered every available product.
+
+Q55. Find products ordered by every customer.
+
+Q56. Find employees who worked on all projects.
+
+Q57. Find departments where every employee earns more than 50,000.
+
+Q58. Find customers who ordered at least one product from every category.
+
+Q59. Find suppliers supplying products in every category.
+
+Q60. Find employees who have never reported to any manager
+
+-------------------------------------------------------------------------------------------------------
+
+					-> Logical Operators (AND, OR, NOT) 
+
+the most common SQL interview topics. 
+Below is a complete practice set from 
+Beginner â†’ Intermediate â†’ Advanced, 
+including mixed interview-style questions.
+
+
+Assume the following Employee table:
+
+CREATE TABLE emp(
+	emp_id NUMBER PRIMARY KEY ,
+	emp_name VARCHAR2(10) NOT NULL,
+	gender CHAR(1) CHECK(gender IN('F','M')),
+	dep VARCHAR2(10),
+	sal NUMBER(10,2),
+	hired DATE,
+	city VARCHAR2(10),
+	age NUMBER(2),
+	manager_id NUMBER(3)
+);
+
+
+CREATE TABLE department (
+    dept_id NUMBER PRIMARY KEY,
+    department VARCHAR2(30),
+    location VARCHAR2(30)
+);
+
+CREATE TABLE project (
+    project_id NUMBER PRIMARY KEY,
+    project_name VARCHAR2(30)
+);
+
+CREATE TABLE employee_project (
+    emp_id NUMBER,
+    project_id NUMBER,
+    PRIMARY KEY(emp_id,project_id),
+    FOREIGN KEY(emp_id) REFERENCES emp(emp_id),
+    FOREIGN KEY(project_id) REFERENCES project(project_id)
+);
+
+
+CREATE TABLE customer (
+    cust_id NUMBER PRIMARY KEY,
+    cust_name VARCHAR2(30),
+    city VARCHAR2(30),
+    status VARCHAR2(20)
+);
+
+CREATE TABLE supplier (
+    supplier_id NUMBER PRIMARY KEY,
+    supplier_name VARCHAR2(30),
+    state VARCHAR2(30)
+);
+
+CREATE TABLE category (
+    category_id NUMBER PRIMARY KEY,
+    category_name VARCHAR2(30)
+);
+
+CREATE TABLE product (
+    prod_id NUMBER PRIMARY KEY,
+    product_name VARCHAR2(30),
+    category_id NUMBER,
+    supplier_id NUMBER,
+    price NUMBER(10,2),
+    discontinued CHAR(1),
+
+    FOREIGN KEY(category_id)
+    REFERENCES category(category_id),
+
+    FOREIGN KEY(supplier_id)
+    REFERENCES supplier(supplier_id)
+);
+
+
+CREATE TABLE orders (
+    order_id NUMBER PRIMARY KEY,
+    cust_id NUMBER,
+    prod_id NUMBER,
+    order_date DATE,
+
+    FOREIGN KEY(cust_id)
+    REFERENCES customer(cust_id),
+
+    FOREIGN KEY(prod_id)
+    REFERENCES product(prod_id)
+);
+
+
+insert the value according your choice *** 
+
+---------------------- Beginner (1â€“20) -----------------------------------------------
+--> AND
+
+
+Q1. Display employees working in the IT department and earning more than 50,000.
+
+SELECT *FROM emp WHERE dep='IT' AND sal>50000;
+
+Q2. Display female employees working in the HR department
+
+SELECT *FROM emp WHERE gender='F' AND dep='HR';
+
+Q3. Display employees from Mumbai having a salary greater than 40,000.
+
+SELECT *FROM emp WHERE city='Mumbai' AND sal>40000;
+
+Q4.Display employees aged above 25 and below 35.
+
+SELECT *FROM  emp WHERE age>25 AND age<35; -- u can use between also 
+
+Q5.Display employees hired after 01-Jan-2022 and earning more than 60,000.
+
+SELECT *FROM emp WHERE hired > TO_DATE('01-Jan-2022', 'DD-MON-YYYY') AND sal>60000;
+
+Q6.Display employees whose salary is between 40,000 and 70,000 and who belong to Finance.
+
+SELECT *FROM emp WHERE sal BETWEEN 40000 AND 70000 AND dep='Finance';
+
+Q7.Display male employees from Delhi with a salary above 55,000.
+
+SELECT *FROM emp WHERE gender='M' AND city='delhi' AND sal>55000;
+
+Q8.Display employees from Ahmedabad who work in Sales and earn more than 45,000.
+
+SELECT *FROM emp  WHERE city='Ahmedabad' AND dep='Sales' AND sal>45000;
+
+----------------------------------------------------------------------------------------------------
+
+-> OR
+
+Q9.Display employees working in IT or HR.
+
+SELECT *FROM emp WHERE dep='IT' OR dep='HR';
+
+Q10.Display employees from Mumbai or Pune.
+
+SELECT *FROM emp WHERE city='Mumbai' OR city='Pune';
+
+Q11.Display employees earning less than 30,000 or more than 80,000.
+
+SELECT *FROM emp WHERE sal<30000 OR sal>80000;
+
+Q12.Display employees hired before 2021 or after 2024. 
+
+SELECT *FROM emp WHERE hired < TO_DATE('01-JAN-2021','DD-MON-YYYY') OR hired > TO_DATE('31-DEC-2024','DD-MON-YYYY');
+
+Q13.Display employees whose age is less than 22 or greater than 50.
+
+SELECT *FROM emp WHERE age<22 OR age>50;
+
+Q14.Display employees whose department is Sales or Marketing.
+
+SELECT *FROM emp WHERE dep='Sales' OR dep='Marketing';
+
+---------------------------------------------------------------------------------------------
+
+-> NOT
+
+Q15.Display employees who are not in the IT department.
+
+SELECT *FROM emp WHERE NOT dep='IT';
+
+Q16.Display employees not from Mumbai.
+
+SELECT *FROM emp WHERE NOT city='Mumbai';
+
+Q17.Display employees whose salary is not greater than 60,000.
+
+SELECT *FROM emp WHERE NOT sal>60000; --- or sal<=60000
+
+Q18.Display employees who are not female.
+
+SELECT *FROM emp WHERE NOT GENDER='F';
+
+Q19.Display employees who were not hired in 2023.
+
+SELECT *FROM emp WHERE hired NOT BETWEEN TO_DATE('01-JAN-2023','DD-MON-YYYY') AND TO_DATE('31-DEC-2023','DD-MON-YYYY');
+
+Q20.Display employees who are not in the HR or Finance departments.
+
+SELECT *FROM emp WHERE NOT IN('HR','Finance');
+
+OR U CAN CODE LIKE 
+
+SELECT *FROM emp WHERE dep <> 'HR' AND dep <> 'Finance';
+
+-------------------------------------------------------------------------------------------------------------
+
+----------------------------------------  Intermediate (21â€“40) -----------------------------------------------
+-> Mixed AND + OR (AND has higher precedence than OR , not to forget to apply parenthesis **************
+
+
+Q21.Display employees working in IT or HR and earning more than 50,000.
+
+SELECT *FROM emp WHERE (dep='IT' OR dep='HR') AND sal>50000;
+
+Q22.Display employees from Mumbai or Delhi whose salary is above 60,000.
+
+SELECT *FROM emp WHERE (city='Mumbai' OR city='Delhi')  AND sal>60000;
+
+Q23.Display female employees in HR or Finance.
+
+SELECT *FROM emp WHERE gender='F' AND (dep='HR' OR dep='Finance');
+
+Q24.Display employees earning between 40,000 and 80,000 and working in Sales or Marketing.
+
+SELECT *FROM emp WHERE sal BETWEEN 40000 AND 80000 AND (dep='Sales' OR dep='Marketing');
+
+Q25.Display employees hired after 2022 and working in IT or Finance.
+
+SELECT *FROM emp WHERE hired TO_DATE('01-JAN-2023','DD-MON-YYYY') AND (dep='IT' OT dep='Finance');
+
+---------------------------------------------------------------------------------------------
+-> AND + NOT
+
+
+Q26.Display employees working in IT but not from Mumbai.
+
+SELECT *FROM emp WHERE dep='IT' AND NOT city='Mumbai';
+
+Q27.Display employees earning more than 50,000 but not in HR.
+
+SELECT *FROM emp WHERE sal>50000 AND NOT dep='HR';
+
+Q28.Display employees from Ahmedabad but not in Sales.
+
+SELECT *FROM emp WHERE city='Ahemdabad' AND NOT dep='Sales';
+
+Q29.Display employees older than 30 but not managers.
+
+
+
+Q30.Display employees who are not from Delhi and earn more than 40,000.
+
+SELECT *FROM emp WHERE NOT city='Delhi' AND sal>40000;
+
+--------------------------------------------------------------------------------------------------
+-> OR + NOT
+
+
+Q31.Display employees from Mumbai or not working in HR.
+
+SELECT *FROM emp WHERE city='Mumbai' OR NOT dep='HR';
+
+Q32.Display employees earning less than 40,000 or not from Ahmedabad.
+
+SELECT *FROM emp WHERE sal<40000 OR NOT city='Ahmedabad';
+
+Q33.Display employees hired before 2022 or not working in Finance.
+
+SELECT *FROM emp WHERE hired TO_DATE('01-JAN-2023','DD-MON-YYYY') OR NOT dep='Finance';
+
+Q34.Display employees from Pune or not earning above 70,000.
+
+SELECT *FROM emp WHERE city='Pune' OR sal<=70000;
+
+
+Q35.Display employees working in Sales or not from Mumbai.
+
+SELECT *FROM emp WHERE dep='Sales' OR  NOT city='Mumbai';
+
+-----------------------------------------------------------------------------------------
+  
+                                **Three Logical Operators Together***
+								
+								
+Q36.Display employees working in IT or HR, earning more than 60,000, and not from Mumbai.
+
+SELECT *FROM emp WHERE (dep='IT' OR dep='HR') AND  sal>60000 AND city<>'Mumbai';
+
+Q37.Display female employees from Ahmedabad or Surat who are not in Finance.
+
+SELECT *FROM emp WHERE gender='F' AND (city='Ahmedabad' OR city='Surat') AND dep<>'Finance';
+
+Q38.Display employees hired after 2021, earning above 50,000, and not in Marketing.
+
+SELECT *FROM emp WHERE hired > TO_DATE('01-JAN-2022','DD-MON-YYYY') AND sal>50000 AND dep<>'Marketing';
+
+Q39.Display employees younger than 35 or working in Sales but not earning less than 40,000.
+
+SELECT *FROM emp WHERE (age>35 OR dep='Sales') AND  sal>=40000;
+
+Q40.Display employees working in Finance, HR, or IT but not from Delhi.
+
+SELECT *FROM emp WHERE  (dep='Finance' OR dep='HR' OR dep='IT') AND city<>'Delhi';
+
+or us can use 
+
+SELECT *FROM emp WHERE dep IN('Finance','HR','IT') AND city<>'Delhi';
+
+---------------------------------------------------- Advanced (41â€“60) ----------------------------------------
+
+Q41.Display employees earning more than the company average and working in IT.
+
+SELECT *FROM emp WHERE sal>
+(
+	SELECT AVG(sal) FROM emp
+) 
+AND dep='IT';
+
+Q42.Display employees earning less than the department average or working in HR.
+
+SELECT *FROM emp  e 
+WHERE sal<
+(
+	SELECT AVG(sal) FROM emp WHERE dep=e.dep
+)
+OR dep='HR';
+
+Q43.Display employees who are not managers and earn more than every employee in Sales.
+
+
+
+Q44.Display employees working in departments located in Mumbai and earning more than 70,000.
+
+
+
+Q45.Display employees who have never managed anyone and work in Finance.
+ 
+SELECT *FROM emp 
+WHERE emp_id NOT IN 
+(
+	SELECT manager_id FROM emp WHERE manager_id IS NOT NULL
+)
+AND dep='Finanace';
+
+
+Q46.Display employees working on projects and earning above the project average salary.
+
+
+
+Q47.Display employees who are in IT or HR but not assigned to any project.
+
+
+
+Q48.Display customers who placed orders in 2024 or 2025 but not from Mumbai.
+
+
+
+Q49.Display products costing above 500 or belonging to Electronics but not discontinued.
+
+
+
+Q50.Display employees hired before 2022, earning above 60,000, and working in departments having more than 10 employees.
+
+SELECT *FROM emp e
+WHERE hired < TO_DATE('01-JAN-2022','DD-MON-YYYY')
+AND sal>60000 AND dep IN
+(
+	SELECT dep FROM emp 
+	GROUP BY dep 
+	HAVING COUNT(*) > 10
+);
+
+-------------------------------------------- Frequently Asked Interview Questions ----------------------------------------------------
+
+Q51.Find employees who satisfy multiple conditions using only AND.
+
+SELECT *FROM emp WHERE dep='IT' 
+AND sal>50000 AND city='Mumbai';
+
+Q52.Find employees satisfying either one of two conditions using OR.
+
+SELECT *FROM emp 
+WHERE dep='IT' OR city='Mumbai';
+
+Q53.Find employees who do not satisfy a given condition using NOT.
+
+SELECT *FROM emp WHERE NOT dep='IT';
+
+Q54.Write a query combining AND, OR, and NOT correctly using parentheses.
+
+SELECT *FROM emp WHERE (dep='IT' OR dep='HR') AND sal>50000 AND NOT city='Mumbai';
+
+Q55.Explain the difference between:
+
+AND
+OR
+NOT
+by writing queries for each.
+
+SELECT *FROM emp WHERE dep='IT' AND sal>50000;
+
+SELECT *FROM emp WHERE dep='IT' OR dep='HR';
+
+SELECT *FROM emp WHERE NOT city='Mumbai';
+
+
+Q56. Find employees from IT or HR whose salary is above 50,000 but who are not from Mumbai.
+
+SELECT *FROM emp WHERE dep IN('IT','HR') AND sal>50000 AND city<>'Mumbai';
+
+Q57.Find employees hired after 2023 or earning above 90,000 but not managers.
+
+SELECT *FROM emp
+WHERE (hired > TO_DATE('31-DEC-2023','DD-MON-YYYY') OR sal>90000)
+AND emp_id NOT IN 
+(
+	SELECT manager_id FROM emp WHERE manager_id IS NOT NULL
+);
+
+Q58.Find employees who are not in IT and not in HR.
+
+SELECT *FROM emp WHERE dep NOT IN ('IT','HR');
+
+Q59.Find employees working in Finance and earning either above 80,000 or below 30,000.
+
+SELECT *FROM emp WHERE dep='Finance' AND (sal>80000 OR sal<30000);
+
+
+Q60.Write one query that uses:
+
+AND
+OR
+NOT
+BETWEEN
+IN
+LIKE
+
+together.
+
+
+SELECT *FROM emp WHERE dep IN('IT','HR')
+AND sal BETWEEN 40000 AND 80000
+AND emp_name LIKE 'A%'
+AND NOT city='Mumbai'
+AND manager_id IN( SELECT manager_id FROM emp 
+					WHERE manager_id IS NOT NULL
+				);
+
+----------------------------------------- Challenge Questions (Data Analyst / Data Scientist Interview) ---------------------------
+
+Q61.Find employees from Mumbai or Delhi who work in IT, earn more than 60,000, and were hired after 2022.
+
+SELECT *FROM emp WHERE city IN('Mumbai','Delhi') AND dep='IT' AND sal>60000 AND hired >TO_DATE('31-DEC-2022','DD-MON-YYYY');
+
+Q62.Find employees not working in HR but whose names start with 'A' and salary is between 50,000 and 80,000.
+
+SELECT *FROM emp WHERE dep<>'HR' AND emp_name LIKE 'A%' AND sal BETWEEN 50000 AND 80000;
+
+Q63.Find departments where employees either earn above 75,000 or have more than 10 years of experience, but are not managers.
+
+
+
+Q64.Find customers who are from Gujarat or Maharashtra, have placed at least one order, and are not inactive.
+
+
+
+Q65.Write a single query using logical operators, special operators (IN, BETWEEN, LIKE), and a subquery to filter employees.
+
+
+---------------------------------------------------------------------------------------------------------------------------------------
+									*** set operators  ***
+
+Set Operators are commonly asked in SQL interviews, especially for Data Analyst, 
+Data Scientist, SQL Developer, and Oracle SQL roles.
+
+
+
+create table for solving the queries 
+
+1 . CREATE TABLE Employee_2024 (
+    emp_id NUMBER PRIMARY KEY,
+    emp_name VARCHAR2(30),
+    department VARCHAR2(30),
+    salary NUMBER(10,2)
+);
+
+INSERT INTO Employee_2024 VALUES (101,'Amit','IT',60000);
+INSERT INTO Employee_2024 VALUES (102,'Priya','HR',55000);
+INSERT INTO Employee_2024 VALUES (103,'Rahul','Finance',70000);
+INSERT INTO Employee_2024 VALUES (104,'Neha','Sales',50000);
+INSERT INTO Employee_2024 VALUES (105,'Karan','IT',65000);
+INSERT INTO Employee_2024 VALUES (106,'Riya','Marketing',48000);
+INSERT INTO Employee_2024 VALUES (107,'Arjun','HR',62000);
+INSERT INTO Employee_2024 VALUES (108,'Sneha','Finance',72000);
+
+
+2 . CREATE TABLE Employee_2025 (
+    emp_id NUMBER PRIMARY KEY,
+    emp_name VARCHAR2(30),
+    department VARCHAR2(30),
+    salary NUMBER(10,2)
+);
+
+INSERT INTO Employee_2025 VALUES (103,'Rahul','Finance',72000);
+INSERT INTO Employee_2025 VALUES (104,'Neha','Sales',52000);
+INSERT INTO Employee_2025 VALUES (105,'Karan','IT',67000);
+INSERT INTO Employee_2025 VALUES (106,'Riya','Marketing',50000);
+INSERT INTO Employee_2025 VALUES (109,'Vikas','IT',68000);
+INSERT INTO Employee_2025 VALUES (110,'Anjali','HR',60000);
+INSERT INTO Employee_2025 VALUES (111,'Meera','Finance',75000);
+INSERT INTO Employee_2025 VALUES (112,'Rohit','Sales',53000);
+
+3 . CREATE TABLE Employee_Branch1 AS
+    SELECT * FROM Employee_2024;
+
+4 . CREATE TABLE Employee_Branch2 AS
+    SELECT * FROM Employee_2025;
+
+5 . CREATE TABLE Employee_Branch3 (
+    emp_id NUMBER PRIMARY KEY,
+    emp_name VARCHAR2(30),
+    department VARCHAR2(30),
+    salary NUMBER(10,2)
+);
+
+6 . CREATE TABLE Permanent_Employee AS
+    SELECT * FROM Employee_2024;
+	
+7 . CREATE TABLE Contract_Employee (
+    emp_id NUMBER PRIMARY KEY,
+    emp_name VARCHAR2(30),
+    department VARCHAR2(30),
+    salary NUMBER(10,2)
+);
+
+INSERT INTO Contract_Employee VALUES (201,'Pooja','IT',35000);
+INSERT INTO Contract_Employee VALUES (202,'Raj','Sales',32000);
+INSERT INTO Contract_Employee VALUES (203,'Simran','HR',30000);
+
+
+8. CREATE TABLE India_Customer(
+    cust_id NUMBER PRIMARY KEY,
+    cust_name VARCHAR2(30)
+);
+
+INSERT INTO India_Customer VALUES(1,'Amit');
+INSERT INTO India_Customer VALUES(2,'Rahul');
+INSERT INTO India_Customer VALUES(3,'Neha');
+INSERT INTO India_Customer VALUES(4,'Karan');
+INSERT INTO India_Customer VALUES(5,'Pooja');
+
+9 . CREATE TABLE USA_Customer(
+    cust_id NUMBER PRIMARY KEY,
+    cust_name VARCHAR2(30)
+);
+
+INSERT INTO USA_Customer VALUES(3,'Neha');
+INSERT INTO USA_Customer VALUES(4,'Karan');
+INSERT INTO USA_Customer VALUES(5,'Pooja');
+INSERT INTO USA_Customer VALUES(6,'John');
+INSERT INTO USA_Customer VALUES(7,'Smith');
+
+10 . CREATE TABLE Warehouse_A(
+    prod_id NUMBER PRIMARY KEY,
+    product_name VARCHAR2(30)
+);
+
+INSERT INTO Warehouse_A VALUES(1,'Laptop');
+INSERT INTO Warehouse_A VALUES(2,'Mouse');
+INSERT INTO Warehouse_A VALUES(3,'Keyboard');
+INSERT INTO Warehouse_A VALUES(4,'Monitor');
+INSERT INTO Warehouse_A VALUES(5,'Printer');
+
+11 . CREATE TABLE Warehouse_B(
+    prod_id NUMBER PRIMARY KEY,
+    product_name VARCHAR2(30)
+);
+
+INSERT INTO Warehouse_B VALUES(3,'Keyboard');
+INSERT INTO Warehouse_B VALUES(4,'Monitor');
+INSERT INTO Warehouse_B VALUES(5,'Printer');
+INSERT INTO Warehouse_B VALUES(6,'Scanner');
+INSERT INTO Warehouse_B VALUES(7,'Speaker');
+
+12 . CREATE TABLE Warehouse_C(
+    prod_id NUMBER PRIMARY KEY,
+    product_name VARCHAR2(30)
+);
+
+INSERT INTO Warehouse_C VALUES(4,'Monitor');
+INSERT INTO Warehouse_C VALUES(5,'Printer');
+INSERT INTO Warehouse_C VALUES(6,'Scanner');
+INSERT INTO Warehouse_C VALUES(8,'Tablet');
+
+13 . CREATE TABLE Course_A(
+    student_id NUMBER PRIMARY KEY,
+    student_name VARCHAR2(30)
+);
+
+INSERT INTO Course_A VALUES(1,'Aman');
+INSERT INTO Course_A VALUES(2,'Riya');
+INSERT INTO Course_A VALUES(3,'Kunal');
+INSERT INTO Course_A VALUES(4,'Sneha');
+
+14 . CREATE TABLE Course_B(
+    student_id NUMBER PRIMARY KEY,
+    student_name VARCHAR2(30)
+);
+
+INSERT INTO Course_B VALUES(3,'Kunal');
+INSERT INTO Course_B VALUES(4,'Sneha');
+INSERT INTO Course_B VALUES(5,'Rohan');
+INSERT INTO Course_B VALUES(6,'Priya');
+
+15 . CREATE TABLE Java_Students AS
+     SELECT * FROM Course_A;
+	
+16 . CREATE TABLE Python_Students AS
+	 SELECT * FROM Course_B;
+	 
+17 . CREATE TABLE Sales_Q1(
+    prod_id NUMBER,
+    amount NUMBER
+);
+
+INSERT INTO Sales_Q1 VALUES(1,5000);
+INSERT INTO Sales_Q1 VALUES(2,6000);
+INSERT INTO Sales_Q1 VALUES(3,7000);
+
+18 . CREATE TABLE Sales_Q2(
+    prod_id NUMBER,
+    amount NUMBER
+);
+
+INSERT INTO Sales_Q2 VALUES(2,8000);
+INSERT INTO Sales_Q2 VALUES(3,9000);
+INSERT INTO Sales_Q2 VALUES(4,6000);
+
+19 . CREATE TABLE Sales_Q3(
+    prod_id NUMBER,
+    amount NUMBER
+);
+
+INSERT INTO Sales_Q3 VALUES(3,7500);
+INSERT INTO Sales_Q3 VALUES(4,8500);
+INSERT INTO Sales_Q3 VALUES(5,9500);
+
+20 . CREATE TABLE Sales_Q4(
+    prod_id NUMBER,
+    amount NUMBER
+);
+
+INSERT INTO Sales_Q4 VALUES(4,6500);
+INSERT INTO Sales_Q4 VALUES(5,8500);
+INSERT INTO Sales_Q4 VALUES(6,9500);
+
+--------------------------------------   Beginner    --------------------------------------------
+-> UNION
+
+Q1.Display all employee names from Employee_2024 and Employee_2025 without duplicates.
+
+SELECT emp_name FROM Employee_2024
+UNION
+SELECT  emp_name FROM Employee_2025;
+
+Q2.Display all department names from both tables without duplicates.
+
+--NOTE - ** union all - combination of result and keep  duplicates , union alone  remove duplicates 
+
+SELECT department FROM Employee_2024
+UNION    
+SELECT department FROM Employee_2025; 
+
+Q3.Display employee IDs from both tables using UNION.
+
+SELECT emp_id FROM Employee_2024
+UNION 
+SELECT emp_id FROM Employee_2025; 
+
+Q4.Display employee names and departments from both tables.
+
+SELECT emp_name, department FROM Employee_2024
+UNION
+SELECT emp_name,department FROM Employee_2025;
+
+Q5.Display employees from two branch offices using UNION. 
+
+SELECT *FROM Employee_Branch1
+UNION
+SELECT *FROM Employee_Branch2;
+
+-> UNION ALL - conbination result and keep duplicates 
+
+Q6.Display all employee names from both tables including duplicates.
+
+SELECT *FROM Employee_2024
+UNION ALL
+SELECT *FROM Employee_2025;
+
+Q7.Display all employee IDs from both tables including duplicates.
+
+SELECT emp_id FROM Employee_2024
+UNION ALL
+SELECT emp_id FROM Employee_2025;
+
+Q8.Display employee names and salaries from both tables including duplicate rows.
+
+SELECT emp_name,sal FROM Employee_2024
+UNION ALL
+SELECT emp_name,sal FROM Employee_2025;
+
+Q9.Display customer names from two regional tables using UNION ALL.
+
+SELECT cust_name FROM India_Customer
+UNION ALL
+SELECT cust_name FROM USA_Customer;
+
+Q10.Display all products from two warehouse tables including duplicates.
+
+SELECT product_name FROM Warehouse_A
+UNION ALL
+SELECT product_name FROM Warehouse_B;
+
+-> INTERSECT
+
+Q11.Display employees present in both Employee_2024 and Employee_2025.
+
+SELECT emp_name FROM Employee_2024
+INTERSECT
+SELECT emp_name FROM Employee_2025;
+
+Q12.Display common department names from both tables.
+
+SELECT department FROM Employee_2024
+INTERSECT
+SELECT department FROM Employee_2025;
+
+Q13.Display employees having the same employee ID in both tables.
+
+SELECT emp_id FROM Employee_2024
+INTERSECT 
+SELECT emp_id FROM Employee_2025;
+
+Q14.Display customers who appear in both the India and USA customer tables.
+
+SELECT cust_name FROM India_Customer
+INTERSECT
+SELECT cust_name FROM USA_Customer;
+
+Q15.Display common product IDs from two inventory tables.
+
+SELECT prod_id FROM Warehouse_A
+INTERSECT 
+SELECT prod_id FROM Warehouse_B;
+
+
+-> MINUS / EXCEPT
+
+
+Q16.Display employees present in Employee_2024 but not in Employee_2025.
+
+SELECT emp_name FROM Employee_2024
+MINUS
+SELECT emp_name FROM Employee_2025;
+
+Q17.Display departments available in 2024 but not in 2025.
+
+SELECT department FROM Employee_2024
+MINUS
+SELECT department FROM Employee_2025;
+
+Q18.Display customers present in the India table but not in the USA table.
+
+SELECT cust_name FROM India_Customer
+MINUS
+SELECT cust_name FROM  USA_Customer;
+
+Q19.Display products available in Warehouse A but not Warehouse B.
+
+SELECT product_name FROM Warehouse_A
+MINUS 
+SELECT product_name FROM Warehouse_B;
+
+Q20.Display students enrolled in Course A but not Course B.
+
+SELECT student_name FROM Course_A
+MINUS
+SELECT student_name FROM Course_B;
+
+
+
+-------------------------------------------- Intermediate (21 - 40) ------------------------------------------------
+
+-> UNION
+
+Q21.Display employee names from two tables sorted alphabetically.
+
+SELECT emp_name FROM Employee_2024
+UNION 
+SELECT emp_name FROM Employee_2025
+ORDER BY emp_name;
+
+Q22.Display all employees from two tables ordered by salary.
+
+SELECT *FROM Employee_2024
+UNION
+SELECT *FROM Employee_2025
+ORDER BY sal;
+
+Q23.Display employees from three branch tables using UNION.
+
+SELECT *FROM Employee_Branch1
+UNION 
+SELECT *FROM Employee_Branch2
+UNION
+SELECT *FROM Employee_Branch3;
+
+Q24.Combine permanent and contract employees into one result.  **************************doubts
+
+SELECT *FROM Permanent_Employee
+UNION
+SELECT *FROM Contract_Employee;
+
+Q25.Display all managers from multiple office tables.
+(Assume managers are stored in each branch)
+
+SELECT *FROM Employee_Branch1
+WHERE department='Manager'
+UNION
+SELECT *FROM Employee_Branch2
+WHERE department='Manager'
+UNION
+SELECT *FROM Employee_Branch3
+WHERE department='Manager';
+
+
+-> UNION ALL
+
+Q26.Display all sales transactions from January and February including duplicate transactions.
+
+required :- Sales_January
+			Sales_February
+
+SELECT *FROM Sales_January
+UNION ALL
+SELECT *FROM Sales_February;
+			
+Q27.Combine log records from two servers.
+
+needs - Server1_Log
+        Server2_Log
+	
+SELECT *FROM Server1_Log
+UNION ALL
+SELECT *FROM Server2_Log;
+		
+		
+Q28.Display all orders from online and offline stores.
+
+(note - in your table of orders must include online_orders and offline_orders then  and then only it works okkk**********)
+
+SELECT *FROM Online_Orders
+UNION ALL
+SELECT *FROM Offline_Orders;
+
+Q29.Display all customer feedback from two systems.
+
+(need - feedback_system1 and feedbacksys2 table okkkk ***)
+
+SELECT *FROM Feedback_System1
+UNION ALL
+SELECT *FROM Feedback_System2;
+
+Q30.Display all attendance records from two semesters.
+
+SELECT *FROM Attendance_SEM1
+UNION ALL
+SELECT *FROM Attendance_SEM2;
+
+
+-> INTERSECT
+
+
+Q31.Find customers who purchased in both 2024 and 2025.
+
+(NEED - cust_2024 and cust_2025 table )
+
+SELECT cust_name FROM Customer_2024
+INTERSECT
+SELECT cust_name FROM Customer_2025;
+
+Q32.Find students enrolled in both Java and Python courses.
+
+SELECT student_name FROM Java_Students
+INTERSECT
+SELECT student_name FROM Python_Students;
+
+Q33.Find products available in both warehouses.
+
+SELECT prod_name FROM Warehouse_A
+INTERSECT
+SELECT prod_name FROM Warehouse_B;
+
+Q34.Find employees working in both Project A and Project B.
+
+-- NEED - projA and proj B
+
+SELECT emp_id FROM Project_A
+INTERSECT 
+SELECT emp_id FROM Project_B;
+
+Q35.Find suppliers supplying both Electronics and Furniture.
+
+-- need - electronics_supplier , furniture_supplier
+
+SELECT supplier_name FROM Electronics_supplier
+INTERSECT 
+SELECT supplier_name FROM Furniture_supplier;
+
+
+-> MINUS / EXCEPT
+
+
+Q36.Find employees who left the company in 2025.
+
+SELECT emp_name FROM Employee_2024
+MINUS
+SELECT emp_name FROM Employee_2025;
+
+Q37.Find customers who ordered in 2024 but not in 2025.
+
+-- need - customer_2024 , customer_2025 table
+
+SELECT cust_name FROM Customer_2024
+MINUS
+SELECT cust_name FROM Customer_2025;
+
+Q38.Find students who passed Semester 1 but not Semester 2.
+
+SELECT student_name FROM SEM1
+MINUS
+SELECT student_name FROM SEM2;
+
+Q39.Find products sold online but never sold offline.
+
+SELECT prod_name FROM Online_Orders
+MINUS
+SELECT prod_name FROM Offline_Orders;
+
+Q40.Find employees assigned to Project A but not Project B.
+
+SELECT emp_id FROM Project_A
+MINUS
+SELECT emp_id FROM Project_B;
+
+-------------------------- Advanced (41 - 60) ------------------------------
+
+Q41.Combine employees from three different branch tables using UNION.
+
+
+
+Q42.Display common employees across three tables.
+
+
+
+Q43.Display employees unique to one branch only.
+
+
+
+Q44.Display products available in all three warehouses.
+
+
+
+Q45.Display customers who purchased from every branch.
+
+
+
+Q46.Find duplicate rows using UNION ALL.
+
+
+
+Q47.Remove duplicate rows using UNION.
+
+
+
+Q48.Compare UNION and UNION ALL on the same dataset.
+
+
+
+Q49.Display records present in one table but not another using MINUS.
+
+
+
+Q50.Display records unique to each table (symmetric difference).
+
+
+
+Q51.Combine current employees and former employees into one report.
+
+
+
+Q52.Display employees promoted in either 2024 or 2025 but not both.
+
+
+
+Q53.Find employees common to HR and Payroll databases.
+
+
+
+Q54.Display customers existing in CRM but missing from the Billing system.
+
+
+
+Q55.Combine sales from all quarters into one report.
+
+
+
+Q56.Find products sold in every quarter.
+
+
+
+Q57.Find products sold only in Quarter 1.
+
+
+
+Q58.Display all unique cities from multiple customer tables.
+
+
+
+Q59.Display all employee emails from multiple systems without duplicates.
+
+
+
+Q60.Generate a yearly employee master report using set operators.
+
+
+
+--------------------­ Frequently Asked Interview Questions ------------------------------
+
+Q61.What is the difference between UNION and UNION ALL? Demonstrate using SQL queries.
+
+
+
+Q62.When should UNION ALL be preferred over UNION?
+
+
+
+Q63.Write a query using INTERSECT to find common employees between two tables.
+
+
+
+Q64.Write a query using MINUS (or EXCEPT) to find employees missing from another table.
+
+
+
+Q65.Can ORDER BY be used inside each query of a UNION? Explain with an example.
+
+
+
+Q66.What happens if the number of columns in both SELECT statements is different?
+
+
+
+Q67.What happens if the data types of the selected columns are different?
+
+
+
+Q68.Can duplicate rows appear when using UNION?
+
+
+
+Q69.Can duplicate rows appear when using UNION ALL?
+
+
+
+Q70.Which set operator generally performs better on large datasets, and why?
+
+
+ 
+------------------------------------------- FAANG / Product-Based Interview Questions --------------------------------
+
+Q71.Compare customer lists from two years and identify:
+
+New customers
+Existing customers
+Lost customers
+
+
+Q72.Compare product catalogs from two warehouses and identify common and unique products.
+
+
+
+Q73.Generate a report combining employees from multiple branch offices while removing duplicates.
+
+
+
+Q74.Find users who logged in from both the mobile app and website.
+
+
+
+Q75.Find products sold in online stores but never sold in physical stores.
+
+
+
+Q76.Find students enrolled in both Machine Learning and Data Science courses.
+
+
+
+Q77.Generate a consolidated sales report from four quarterly sales tables.
+
+
+
+Q78.Compare two database snapshots and identify inserted, deleted, and unchanged records.
+
+
+
+Q79.Find customers who purchased in all three regions (North, South, and West).
+
+
+
+Q80.Build a single query that combines UNION, INTERSECT, and MINUS/EXCEPT to produce a business report.
+
+
+
+--------------------------------------------- Interview Theory Questions ------------------------------------
+
+Be prepared to answer these verbally:
+
+Difference between UNION and UNION ALL.
+Difference between INTERSECT and INNER JOIN.
+Difference between MINUS (EXCEPT) and NOT EXISTS.
+Rules for using set operators.
+Which set operator is fastest?
+Which operator removes duplicates?
+Can NULL values participate in set operators?
+Where can ORDER BY be used with set operators?
+Oracle MINUS vs SQL Server/PostgreSQL EXCEPT.
+Real-world use cases for each set operator.
+ Coverage
+
+This roadmap covers:
+
+ UNION
+ UNION ALL
+ INTERSECT
+ MINUS / EXCEPT
+ Beginner to Advanced
+ Frequently asked interview questions
+ Real business scenarios
+ Data Analyst/Data Scientist interview-level practice
+ Oracle SQL and standard SQL concepts (noting that Oracle uses MINUS, while many other databases use EXCEPT)
+
+--------------------------------------------------------------------------------------------------------------------
+
+
+
+---------------------- Comparison Operators  -----------------------------------------------
+
+-> create the follwing table to solve all queries :- 
+
+1 .  this table gonna help to solve the queries no.
+
+Q1–Q12
+Q16–Q17
+Q21–Q38 (except product/customer/order questions)
+Q41–Q43
+Q46–Q59
+Q62–Q75
+Q76–Q80
+Q81
+Q84
+Q85
+Q86
+Q88
+Q89
+Q90
+
+CREATE TABLE emp(
+	emp_id NUMBER PRIMARY KEY,
+	emp_name VARCHAR2(10),
+	gender CHAR(1) CHECK(gender IN('F','M')),
+	age NUMBER(2),
+	dep VARCHAR2(10),
+	sal NUMBER(10,2),
+	hire_date DATE,
+	city VARCHAR2(10),
+	manager_id NUMBER,
+	experience NUMBER
+);
+
+INSERT INTO emp VALUES (101,'Amit','M',45,'IT',120000,TO_DATE('15-JAN-2015','DD-MON-YYYY'),'Mumbai',NULL,15);
+
+INSERT INTO emp VALUES (102,'Priya','F',40,'HR',90000,TO_DATE('10-MAR-2016','DD-MON-YYYY'),'Delhi',NULL,12);
+
+INSERT INTO emp VALUES (103,'Rahul','M',38,'Finance',90000,TO_DATE('05-JUL-2018','DD-MON-YYYY'),'Ahmedabad',NULL,8);
+
+INSERT INTO emp VALUES (104,'Neha','F',35,'Sales',70000,TO_DATE('18-AUG-2020','DD-MON-YYYY'),'Pune',NULL,5);
+
+INSERT INTO emp VALUES (105,'Karan','M',30,'IT',60000,TO_DATE('12-JAN-2022','DD-MON-YYYY'),'Mumbai',101,3);
+
+INSERT INTO emp VALUES (106,'Riya','F',28,'HR',50000,TO_DATE('20-JUN-2023','DD-MON-YYYY'),'Ahmedabad',102,2);
+
+INSERT INTO emp VALUES (107,'Arjun','M',26,'Finance',45000,TO_DATE('15-MAY-2024','DD-MON-YYYY'),'Surat',103,1);
+
+INSERT INTO emp VALUES (108,'Sneha','F',24,'Sales',40000,TO_DATE('01-JAN-2024','DD-MON-YYYY'),'Mumbai',104,1);
+
+INSERT INTO emp VALUES (109,'Vikas','M',22,'Marketing',30000,TO_DATE('10-OCT-2024','DD-MON-YYYY'),'Delhi',NULL,0);
+
+INSERT INTO emp VALUES (110,'Anjali','F',32,'IT',60000,TO_DATE('25-DEC-2021','DD-MON-YYYY'),'Ahmedabad',101,4);
+
+2 . this table gonna help to solve the queries no.
+
+Q13
+Q18
+Q39
+Q44
+Q60
+Q82
+
+CREATE TABLE product(
+	prod_id NUMBER PRIMARY KEY,
+	prod_name VARCHAR2(10),
+	category VARCHAR2(10),
+	price NUMBER
+);
+
+INSERT INTO product VALUES (101,'Laptop','Electro',65000);
+INSERT INTO product VALUES (102,'Mouse','Electro',800);
+INSERT INTO product VALUES (103,'Keyboard','Electro',1500);
+INSERT INTO product VALUES (104,'Chair','Furniture',3500);
+INSERT INTO product VALUES (105,'Table','Furniture',7000);
+INSERT INTO product VALUES (106,'Pen','Stationery',50);
+INSERT INTO product VALUES (107,'Notebook','Stationery',120);
+INSERT INTO product VALUES (108,'Mobile','Electro',30000);
+INSERT INTO product VALUES (109,'Bottle','Home',450);
+INSERT INTO product VALUES (110,'Fan','Home',2500);
+
+
+3 . this table gonna help to solve the queries no.
+
+Q14
+Q19
+Q23
+Q45
+
+CREATE TABLE stud(
+	stud_id NUMBER PRIMARY KEY,
+	stud_name VARCHAR2(10),
+	class NUMBER,
+	marks NUMBER
+);
+
+INSERT INTO stud VALUES (101,'Amit',10,95);
+INSERT INTO stud VALUES (102,'Priya',10,82);
+INSERT INTO stud VALUES (103,'Rahul',11,68);
+INSERT INTO stud VALUES (104,'Neha',11,39);
+INSERT INTO stud VALUES (105,'Karan',12,75);
+INSERT INTO stud VALUES (106,'Riya',12,88);
+INSERT INTO stud VALUES (107,'Arjun',10,55);
+INSERT INTO stud VALUES (108,'Sneha',11,95);
+INSERT INTO stud VALUES (109,'Vikas',12,28);
+INSERT INTO stud VALUES (110,'Anjali',10,75);
+
+4 . this table gonna help to solve the queries no.
+
+Q15
+Q40
+Q61
+Q83
+Q87
+
+CREATE TABLE customer(
+	cust_id NUMBER PRIMARY KEY,
+	cust_name VARCHAR2(10),
+	city VARCHAR2(10)
+);
+
+INSERT INTO customer VALUES (101,'Raj','Mumbai');
+INSERT INTO customer VALUES (102,'Priya','Delhi');
+INSERT INTO customer VALUES (103,'Amit','Ahmedabad');
+INSERT INTO customer VALUES (104,'Neha','Pune');
+INSERT INTO customer VALUES (105,'Karan','Surat');
+INSERT INTO customer VALUES (106,'Riya','Mumbai');
+INSERT INTO customer VALUES (107,'Arjun','Rajkot');
+INSERT INTO customer VALUES (108,'Sneha','Ahmedabad');
+INSERT INTO customer VALUES (109,'Vikas','Delhi');
+INSERT INTO customer VALUES (110,'Anjali','Mumbai');
+
+5 . this table gonna help to solve the queries no.
+
+Q20
+Q35
+Q40
+Q61
+Q83
+Q87
+
+CREATE TABLE orders(
+	order_id NUMBER PRIMARY KEY,
+	cust_id NUMBER,
+	order_date  DATE,
+	amount NUMBER,
+	CONSTRAINT fk_orders_customer
+	FOREIGN KEY (cust_id)
+	REFERENCES customer(cust_id)
+);
+
+INSERT INTO orders VALUES (1001,101,TO_DATE('15-JAN-2024','DD-MON-YYYY'),25000);
+INSERT INTO orders VALUES (1002,102,TO_DATE('20-FEB-2024','DD-MON-YYYY'),15000);
+INSERT INTO orders VALUES (1003,103,TO_DATE('12-MAR-2024','DD-MON-YYYY'),80000);
+INSERT INTO orders VALUES (1004,101,TO_DATE('08-APR-2024','DD-MON-YYYY'),30000);
+INSERT INTO orders VALUES (1005,104,TO_DATE('10-MAY-2023','DD-MON-YYYY'),9000);
+INSERT INTO orders VALUES (1006,105,TO_DATE('18-JUN-2025','DD-MON-YYYY'),45000);
+INSERT INTO orders VALUES (1007,106,TO_DATE('22-JUL-2024','DD-MON-YYYY'),1500);
+INSERT INTO orders VALUES (1008,108,TO_DATE('11-AUG-2023','DD-MON-YYYY'),60000);
+INSERT INTO orders VALUES (1009,109,TO_DATE('25-SEP-2025','DD-MON-YYYY'),100000);
+INSERT INTO orders VALUES (1010,110,TO_DATE('30-OCT-2024','DD-MON-YYYY'),55000);
+
+6 . this table gonna help to solve the queries no.
+
+Q38
+Q57
+Q58
+Q86
+Q89
+Q90
+
+CREATE TABLE dep(
+	dep_id NUMBER PRIMARY KEY,
+	dep_name VARCHAR2(10),
+	location VARCHAR2(10)
+);
+
+
+INSERT INTO dep VALUES (1,'IT','Mumbai');
+INSERT INTO dep VALUES (2,'HR','Delhi');
+INSERT INTO dep VALUES (3,'Finance','Ahmedabad');
+INSERT INTO dep VALUES (4,'Sales','Pune');
+INSERT INTO dep VALUES (5,'Marketing','Surat');
+INSERT INTO dep VALUES (6,'Support','Rajkot');
+INSERT INTO dep VALUES (7,'Testing','Mumbai');
+INSERT INTO dep VALUES (8,'Admin','Delhi');
+INSERT INTO dep VALUES (9,'Accounts','Ahmedabad');
+INSERT INTO dep VALUES (10,'R&D','Pune');
+
+-------------------------- Beginner (1–25 ------------------------------------
+
+-> Equal To (=)
+
+Q1.Display employees working in the IT department.
+
+SELECT *FROM emp WHERE dep='IT';
+
+Q2.Display employees whose salary is exactly 50,000.
+
+SELECT *FROM emp WHERE sal=50000;
+
+Q3.Display employees from Mumbai.
+
+SELECT *FROM  emp WHERE city='Mumbai';
+
+Q4.Display employees whose gender is Female.
+
+SELECT *FROM  emp WHERE  gender='F';
+
+Q5.Display employees hired on 01-Jan-2024.
+
+SELECT *FROM  emp WHERE hire_date=TO_DATE('01-Jan-2024','DD-MON-YYYY');
+
+
+
+-> Not Equal To (!= or <>)
+
+
+Q6.Display employees who are not in the HR department.
+
+SELECT *FROM emp WHERE dep<>'HR'; 
+
+Q7.Display employees whose salary is not 40,000.
+
+SELECT *FROM emp WHERE sal<>40000;
+
+Q8.Display employees who are not from Ahmedabad.
+
+SELECT *FROM emp WHERE city!='Ahmedabad';
+
+Q9.Display employees whose gender is not Male.
+
+SELECT *FROM emp WHERE gender!='M';
+
+Q10.Display employees not hired in 2023.
+
+SELECT *FROM emp WHERE hired_date NOT BETWEEN 
+TO_DATE('01-JAN-2023','DD-MON-YYYY')
+AND
+TO_DATE('31-DEC-2023','DD-MON-YYYY');
+
+OR 
+
+SELECT *FROM emp WHERE EXTRACT(YEAR FROM hire_date) <> 2023;
+
+
+-> Greater Than (>)
+
+Q11.Display employees earning more than 60,000.
+
+SELECT *FROM emp WHERE sal>60000;
+
+Q12.Display employees older than 30 years.
+
+SELECT *FROM emp WHERE age>30;
+
+Q13.Display products costing more than 1,000.
+
+SELECT *FROM product WHERE price>1000;
+
+Q14.Display students scoring more than 80 marks.
+
+SELECT *FROM stud WHERE marks>80;
+
+Q15.Display customers having more than 10 orders.
+
+SELECT cust_id COUNT(order_id) FROM oders
+GROUP BY cust_id
+HAVING COUNT(order_id)>10; 
+
+
+-> Less Than (<)
+
+Q16.Display employees earning less than 30,000.
+
+SELECT *FROM emp WHERE sal<30000;
+
+Q17.Display employees younger than 25 years.
+
+SELECT *FROM emp WHERE age<25;
+
+Q18.Display products costing less than 500.
+
+SELECT *FROM product WHERE price<500;
+
+Q19.Display students scoring below 40 marks.
+
+SELECT *FROM stud WHERE marks<40;
+
+Q20.Display orders worth less than 1,000.
+
+SELECT *FROM orders WHERE amt<1000; 
+
+
+-> Greater Than or Equal To (>=)
+
+Q21.Display employees earning 60,000 or more.
+
+SELECT *FROM emp WHERE sal>=60000;
+
+Q22.Display employees aged 30 or above.
+
+SELECT *FROM emp WHERE age>=30;
+
+Q23.Display students scoring 75 or above.
+
+SELECT *FROM stud WHERE marks>=75;
+
+-> Less Than or Equal To (<=)
+
+Q24.Display employees earning 40,000 or less.
+
+SELECT *FROM emp WHERE sal<=40000;
+
+Q25.Display employees aged 25 or below.
+
+SELECT *FROM emp WHERE age<=25;
+
+----------------------------------- Intermediate (26–50) -------------------------------------
+
+-> Multiple Comparison Operators
+
+
+Q26.Display employees earning more than 40,000 but less than 80,000.
+
+SELECT *FROM emp WHERE sal BETWEEN 40000 AND 80000;
+
+or 
+
+SELECT *FROM emp WHERE sal>40000 AND sal<80000;
+
+Q27.Display employees aged greater than 25 and less than or equal to 35.
+
+SELECT *FROM emp WHERE age >25 AND age<=35;
+
+Q28.Display employees hired after 2022 but before 2025.
+
+SELECT *FROM emp WHERE hired_date > TO_DATE('31-DEC-2022','DD-MON-YYYY')
+AND hire_date < TO_DATE('01-JAN-2025','DD-MON-YYYY');
+
+or
+
+SELECT *FROM emp
+WHERE EXTRACT(YEAR FROM hire_date)
+BETWEEN 2023 AND 2024;
+
+Q29.Display employees whose salary is greater than or equal to 50,000 and department is IT.
+
+SELECT *FROM emp WHERE sal>=50000 AND dep='IT';
+
+Q30.Display employees whose age is less than 30 and city is Mumbai.
+
+SELECT *FROM emp WHERE age<30 AND city='Mumbai';
+
+
+-> Comparison with Dates
+
+
+Q31.Display employees hired after 01-Jan-2022.
+
+SELECT *FROM emp WHERE hire_date>TO_DATE('01-JAN-2022','DD-MON-YYYY');
+
+Q32.Display employees hired before 01-Jan-2020.
+
+SELECT *FROM emp WHERE hire_date<TO_DATE('01-JAN-2020','DD-MON-YYYY');
+
+Q33.Display employees hired on or after 01-Jan-2024.
+
+SELECT *FROM emp WHERE hire_date>=TO_DATE('01-JAN-2024','DD-MON-YYYY');
+
+Q34.Display employees hired on or before 31-Dec-2023.
+
+SELECT *FROM emp WHERE hire_date<=TO_DATE('31-DEC-2023','DD-MON-YYYY');
+
+Q35.Display orders placed after a given date.
+
+SELECT *FROM orders WHERE order_date>TO_DATE('01-JAN-2024','DD-MON-YYYY');
+
+-> Comparison with Aggregate Functions
+
+
+Q36.Display employees earning more than the average salary.
+
+SELECT *FROM emp WHERE sal>(
+	SELECT AVG(sal) FROM emp
+); 
+
+Q37.Display employees earning less than the average salary.
+
+SELECT *FROM emp 
+WHERE sal<
+(
+	SELECT AVG(sal) FROM emp
+);
+
+Q38.Display departments where the average salary is greater than 70,000.
+
+SELECT dep FROM emp GROUP BY dep HAVING AVG(sal)>70000;
+
+Q39.Display products costing more than the average product price.
+
+SELECT *FROM product 
+WHERE price>
+(
+	SELECT AVG(price) FROM product
+);
+
+Q40.Display customers whose total purchases exceed 1,00,000.
+
+SELECT cust_id,
+       SUM(amount) total_purchase
+FROM orders
+GROUP BY cust_id
+HAVING SUM(amount) > 100000;
+
+-> Comparison with Subqueries
+
+
+Q41.Display employees earning more than the highest salary in the HR department.
+
+SELECT *FROM emp
+WHERE sal>(
+	SELECT MAX(sal) FROM emp WHERE dep='HR'
+);
+
+Q42.Display employees earning less than the lowest salary in Finance.
+
+SELECT *FROM emp 
+WHERE sal<(
+	SELECT MIN(sal) FROM emp WHERE dep='Finance'
+);
+
+Q43.Display employees whose salary equals the maximum salary in their department.
+
+SELECT *FROM emp e
+WHERE sal=(
+	SELECT MAX(sal) FROM emp WHERE dep=e.dep
+);
+
+Q44.Display products costing more than the average price of Electronics.
+
+SELECT *FROM product 
+WHERE price>(
+	SELECT AVG(price) FROM prouct WHERE category='Electronics'
+);
+
+Q45.Display students scoring higher than the average marks of their class.
+
+SELECT *FROM stud s
+WHERE marks>(
+	SELECT AVG(marks) FROM stud WHERE class=s.class;
+);
+
+
+
+-> Mixed Conditions
+
+
+Q46.Display employees working in IT and earning greater than 60,000.
+
+SELECT *FROM emp WHERE dep='IT' AND sal>60000;
+
+Q47.Display employees from Ahmedabad with salary less than 50,000.
+
+SELECT *FROM emp WHERE city='Ahmedabad' AND sal<50000;
+
+Q48.Display employees aged 30 or above and hired before 2023.
+
+SELECT *FROM emp WHERE age>=30 AND  hire_date<TO_DATE('31-DEC-2023','DD-MON-YYYY');
+
+Q49.Display employees whose salary is not equal to 50,000 and age is greater than 25.
+
+SELECT *FROM emp WHERE sal!=50000 AND age>25;
+
+Q50.Display employees from HR earning less than or equal to 45,000.
+
+SELECT *FROM emp WHERE dep='HR' AND sal<=45000;
+
+----------------------------- Advanced (51–75) -----------------------------------------------
+
+Q51.Display employees earning more than their manager.
+
+(need to create manager table)
+
+SELECT e.*
+FROM emp e
+JOIN emp m
+ON e.manager_id = m.emp_id
+WHERE e.sal > m.sal;
+
+Q52.Display employees whose salary is greater than the company average but less than the department maximum.
+
+SELECT *FROM emp e
+WHERE sal>(
+	SELECT AVG(sal) FROM emp 
+)
+AND sal<(
+	SELECT MAX(sal) FROM emp WHERE dep=e.dep
+);
+
+
+Company Average
+      <
+Employee Salary
+      <
+Department Maximum
+
+
+Q53.Display employees earning exactly the same salary as another employee.
+
+SELECT *FROM emp ep1
+WHEN EXISTS
+(
+	SELECT 1 FROM emp e2
+	WHERE e1.sal=e2.sal
+	AND e1.emp_id<>e2.emp_id
+);
+
+Q54.Display employees whose salary is higher than all employees in the Sales department.
+
+SELECT *FROM emp 
+WHERE sal>ALL(
+	SELECT sal FROM emp WHERE dep='Sales'
+);
+
+Q55.Display employees whose salary is lower than every employee in HR.
+
+SELECT *FROM emp
+WHERE sal<ALL(
+	SELECT sal FROM emp WHERE dep='HR'
+);
+
+Q56.Display employees hired before their manager. (join ques)
+
+SELECT e.*FROM emp e
+JOIN emp m
+ON e.manager_id = m.emp_id
+WHERE e.hire_date < m.hire_date;
+
+Q57.Display departments where every employee earns more than 50,000.
+
+SELECT DISTINCT dep FROM emp GROUP BY dep HAVING MIN(sal)>50000;
+
+Q58.Display departments having at least one employee earning above 1,00,000.
+
+SELECT DISTINCT dep FROM emp WHERE sal>100000;
+
+Q59.Display employees whose salary is greater than the department average but less than the company average.
+
+SELECT *FROM emp e
+WHERE sal>(
+	SELECT AVG(sal) FROM emp WHERE dep=e.dep
+)
+AND sal<(
+	SELECT AVG(sal) FROM emp
+);
+
+Q60.Display products costing more than every product in Category A.
+note - There is no Category A.
+       Assume Category A = Electro.
+
+SELECT *FROM product
+WHERE price>ALL(
+	SELECT price FROM product WHERE category='Electro'
+);
+
+Q61.Display customers whose purchase amount equals the highest purchase amount.
+
+
+
+Q62.Display employees whose age is greater than the average age of their department.
+
+
+
+Q63.Display employees whose salary is less than the average salary of employees in Mumbai.
+
+
+
+Q64.Display employees hired after every employee in the HR department.
+
+
+
+Q65.Display employees whose salary equals the second highest salary.
+
+
+
+Q66.Display employees earning more than the third highest salary.
+
+
+
+Q67.Display employees with salaries greater than the average of the top five salaries.
+
+
+
+Q68.Display employees younger than their manager.
+
+
+
+Q69.Display employees whose salary is between the department average and department maximum (without using BETWEEN).
+
+
+
+Q70.Display employees who satisfy three or more comparison conditions in one query.
+
+
+
+Q71.Find the oldest employee.
+
+SELECT *FROM emp WHERE age=
+(
+	SELECT MAX(age) FROM emp 
+);
+
+Q72.Find the youngest employee.
+
+SELECT *FROM emp WHERE age=
+(
+	SELECT MIN(age) FROM emp
+);
+
+Q73.Find employees whose experience is greater than 10 years.
+
+SELECT *FROM emp WHERE experience>10;
+
+Q74.Find employees whose joining date is earlier than all employees in their department.
+
+SELECT *FROM emp e
+WHERE hired_date=
+(
+	SELECT MIN(hire_date) FROM emp WHERE dep=e.dep
+);
+
+Q75.Write a report using multiple comparison operators, joins, and subqueries.
+
+
+
+------------------------- Frequently Asked Interview Questions ------------------------------
+
+
+Q76.What is the difference between = and IN? Demonstrate with queries.
+
+SELECT *FROM emp WHERE dep='IT';
+
+SELECT *FROM emp WHERE dep IN('IT','HR','Finance');
+
+Q77.What is the difference between != and <>?
+
+both return the same result ............. (search by yourself ***)
+
+Q78.Can = be used to compare NULL values? Explain with an example.
+
+nope , IS NULL u can use , IS NOT NULL 
+
+Q79.What happens when comparing a number with a string?
+
+it automatically converts str to no.
+
+Q80.Write a query using all comparison operators (=, !=, <>, >, <, >=, <=) in different conditions.
+
+SELECT *
+FROM emp
+WHERE sal = 60000
+OR sal != 50000
+OR sal <> 70000
+OR age > 25
+OR age < 40
+OR experience >= 5
+OR experience <= 10;
+
+-------------------- FAANG / Product-Based Interview Questions ------------------------------------------------
+
+Q81.Find employees earning more than the average salary of their department.
+
+SELECT *
+FROM emp e
+WHERE sal >
+(
+    SELECT AVG(sal)
+    FROM emp
+    WHERE dep = e.dep
+); -- CORRELATED SUBQUERY is used 
+
+Q82.Find products priced higher than every product in another category.
+
+SELECT *
+FROM product
+WHERE price > ALL
+(
+    SELECT price
+    FROM product
+    WHERE category='Furniture'
+);
+
+Q83.Find customers whose total purchase is greater than the company average.
+
+used :- 
+JOIN
+GROUP BY
+HAVING
+Aggregate
+Subquery
+
+Q84.Find employees earning exactly the department maximum salary.
+
+SELECT *
+FROM emp e
+WHERE sal =
+(
+    SELECT MAX(sal)
+    FROM emp
+    WHERE dep=e.dep
+);
+
+Q85.Find employees hired before the oldest employee in the IT department.
+
+Q86.Find departments where all employees earn above 60,000.
+
+Q87.Find customers whose spending is less than the average spending in their city.
+
+Q88.Find employees whose age equals the department average age.
+
+SELECT *
+FROM emp e
+WHERE age =
+(
+    SELECT AVG(age)
+    FROM emp
+    WHERE dep=e.dep
+);
+
+Q89.Generate a report comparing employee salaries with company, department, and manager salaries.
+
+Q90.Write a single query combining comparison operators, logical operators, joins, aggregate functions, and a subquery.
+
+
+->  Interview Theory Questions
+
+
+Difference between = and !=.
+Difference between != and <>.
+Can = compare NULL values?
+Why do NULL = NULL and NULL != NULL not behave as expected?
+Comparison operators vs logical operators.
+Comparison operators vs special operators (BETWEEN, IN, LIKE).
+Comparison with dates.
+Comparison with aggregate functions.
+Comparison with subqueries.
+Common mistakes when using comparison operators.
+
+
+------------------------------------------------------------------------------------------------
+
+--------------------------------------------  Arithmetic Operators  -------------------------------------
+
+important in SQL interviews ,  
+While the operators themselves are simple (+, -, *, /, %), 
+interviewers often combine them with functions, aggregate functions, GROUP BY, joins, 
+subqueries, and real business calculations.
+
+-> to solve the queries u need to create the follwoing table 
+
+1 . 
+
+CREATE TABLE emp(
+	emp_id NUMBER PRIMARY KEY,
+	emp_name VARCHAR2(10),
+	dep VARCHAR2(10),
+	sal NUMBER(10,2),
+	bonus NUMBER,
+	commission NUMBER,
+	insurance NUMBER(10,2),
+	tax NUMBER(10,2),
+	age NUMBER,
+	experience NUMBER,
+	hire_date DATE,
+	manager_id NUMBER,
+	project_id NUMBER
+);
+
+INSERT INTO emp VALUES (101, 'Amit', 'IT', 60000, 5000, 3000, 2000, 5000,28, 5, DATE '2022-01-15', 105, 1);
+INSERT INTO emp VALUES (102, 'Neha', 'HR', 45000, 3000, 2000, 1500, 3500,25, 3, DATE '2023-03-20', 105, 2); 
+INSERT INTO emp VALUES (103, 'Raj', 'Sales', 70000, 7000, 4000, 2500, 6000,32, 8, DATE '2021-07-10', 105, 3);
+INSERT INTO emp VALUES (104, 'Priya', 'Finance', 55000, 4000, 2500, 1800, 4500,29, 6, DATE '2020-11-05', 105, 4);
+INSERT INTO emp VALUES (105, 'Kiran', 'IT', 90000, 10000, 5000, 3000, 8000,40, 15, DATE '2018-05-12', NULL, 1);
+
+2 . 
+
+CREATE TABLE product(
+	prod_id NUMBER PRIMARY KEY,
+	prod_name VARCHAR2(10),
+	category VARCHAR2(10),
+	cost_price NUMBER(10,2),
+	selling_price NUMBER(10,2),
+	quantity NUMBER,
+	disc NUMBER(10,2)
+);
+
+INSERT INTO product VALUES (1, 'Laptop', 'Electro', 45000, 55000, 20, 5000);
+INSERT INTO product VALUES (2, 'Mouse', 'Electro', 300, 500, 100, 50);
+INSERT INTO product VALUES (3, 'Chair', 'Furnitur', 2000, 3000, 40, 200);
+INSERT INTO product VALUES (4, 'Printer', 'Electro', 5000, 6000, 15, 500);
+INSERT INTO product VALUES (5, 'Mobile', 'Electro', 18000, 20000, 30, 1000);
+
+
+3 . 
+
+CREATE TABLE customer(
+	cust_id NUMBER PRIMARY KEY,
+	cust_name VARCHAR2(10),
+	city VARCHAR2(10)
+);
+
+INSERT INTO customer VALUES (1, 'Rahul', 'Mumbai');
+INSERT INTO customer VALUES (2, 'Sneha', 'Ahmedabad');
+INSERT INTO customer VALUES (3, 'Rohan', 'Delhi');
+INSERT INTO customer VALUES (4, 'Anita', 'Pune');
+INSERT INTO customer VALUES (5, 'Vikas', 'Surat');
+
+4 . 
+
+CREATE TABLE orders(
+	order_id NUMBER PRIMARY KEY,
+	cust_id NUMBER,
+	prod_id NUMBER,
+	quantity NUMBER,
+	unit_price NUMBER(10,2),
+	tax NUMBER(10,2),
+	shipping_charge NUMBER(10,2),
+	discout NUMBER(10,2),
+	order_date DATE,
+	CONSTRAINT fk_customer
+	FOREIGN KEY(prod_id)
+	REFERENCES customer(cust_id),
+	CONSTRAINT fk_product
+	FOREIGN KEY(prod_id)
+	REFERNCES product(prod_id)
+);
+
+INSERT INTO orders VALUES (101, 1, 1, 2, 55000, 9900, 500, 5000, DATE '2024-01-15');
+INSERT INTO orders VALUES (102, 2, 2, 5, 500, 450, 100, 50, DATE '2024-02-10');
+INSERT INTO orders VALUES (103, 3, 3, 4, 3000, 2160, 250, 200, DATE '2024-03-20');
+INSERT INTO orders VALUES (104, 4, 5, 3, 20000, 10800, 300, 1000, DATE '2025-04-18');
+INSERT INTO orders VALUES (105, 5, 4, 2, 6000, 2160, 200, 500, DATE '2025-05-25');
+
+5 . 
+
+CREATE TABLE dep(
+	dep_id NUMBER PRIMARY KEY,
+	dep_name VARCHAR2(10),
+	location VARCHAR2(10)
+);
+
+INSERT INTO dep VALUES (1, 'IT', 'Mumbai');
+INSERT INTO dep VALUES (2, 'HR', 'Delhi');
+INSERT INTO dep VALUES (3, 'Sales', 'Ahmedabad');
+INSERT INTO dep VALUES (4, 'Finance', 'Pune');
+INSERT INTO dep VALUES (5, 'Marketing', 'Surat');
+
+6 . 
+
+CREATE TABLE sales(
+	sale_id NUMBER PRIMARY KEY,
+	prod_id NUMBER,
+	cust_id NUMBER,
+	sale_month VARCHAR2(10),
+	sale_year NUMBER(4),
+	quantity NUMBER,
+	amt NUMBER(10,2),
+	CONSTRAINT fk_sales_prod
+	FOREIGN KEY(prod_id)
+	REFERENCES product(prod_id),
+	CONSTRAINT fk_sales_customer
+	FOREIGN KEY(cust_id)
+	REFERENCES customer(cust_id)
+);
+
+INSERT INTO sales VALUES (101, 1, 1, 'January', 2024, 2, 110000);
+INSERT INTO sales VALUES (102, 2, 2, 'February', 2024, 5, 2500);
+INSERT INTO sales VALUES (103, 3, 3, 'March', 2024, 4, 12000);
+INSERT INTO sales VALUES (104, 5, 4, 'April', 2025, 3, 60000);
+INSERT INTO sales VALUES (105, 4, 5, 'May', 2025, 2, 12000);
+
+
+---------------------------------------------- Beginner (1–25) ----------------------------------
+
+
+-> Addition (+)
+
+
+Q1.Display each employee's salary + bonus.
+
+SELECT  emp_name , sal , bonus, sal+bonus AS total_sal FROM emp;
+
+Q2.Display the total compensation (salary + commission) for every employee.
+
+SELECT emp_name,sal,commission,sal+commission AS total_compensation FROM emp;
+
+Q3.Display the total amount (price + tax) for each product.
+
+SELECT prod_id,unit_price,tax,unit_price+tax AS total_amt FROM orders;
+
+Q4.Display the total order value (unit_price + shipping_charge).
+
+SELECT order_id,unit_price,shipping_charge,unit_price+shipping_charge AS total_order_value FROM orders;
+
+Q5.Increase every employee's salary by 5,000 and display the result.
+
+SELECT emp_name,sal,sal+50000 AS inc_sal FROM emp;
+
+
+
+-> Subtraction (-)
+
+
+Q6.Display the salary after deducting 5,000.
+
+SELECT emp_name,sal,sal-5000 AS final_price FROM product;
+
+Q7.Display the final product price after subtracting the discount.
+
+SELECT prod_name,selling_price,disc,seliing_price-disc AS total_price FROM product;
+
+Q8.Display the remaining stock after selling a given quantity.
+example - sold 5 itmes 
+
+SELECT prod_name,quantity,quantity-5 AS remaining_stock FROM product;
+
+Q9.Display the balance amount after payment.
+
+SELECT  order_name,unit_price,unit_price-1000 AS bal_amt FROM orders;
+
+Q10.Display employees whose salary after deduction is greater than 40,000.
+
+SELECT *FROM emp WHERE sal-50000>40000;
+
+
+-> Multiplication (*)
+
+Q11.Display the total order amount (quantity × unit_price).
+
+SEELCT order_id,quantity,unit_price,quantity*unit_price AS total_order_amt FROM orders;
+
+Q12.Display annual salary (salary × 12).
+
+SELECT emp_id,sal,sal*12 AS anunal_sal FROM emp;
+
+Q13.Display bonus as 10% of salary.
+
+SELECT emp_name,sal,sal*0.10 AS bouns FROM emp;
+
+Q14.Display total inventory value (price × quantity).
+
+SELECT prod_id,selling_price,qunatity,selling_price*quantity AS total_inventory FROM product;
+
+Q15.Display commission as 5% of salary.
+
+SELECT emp_name,sal,sal*0.05 AS commission FROM emp;
+
+
+-> Division (/)
+
+
+Q16.Display monthly salary from annual salary.
+
+SELECT emp_name,(sal*12)/12 AS monthly_sal FROM emp;
+
+Q17.Display average monthly sales (total_sales / 12).
+
+SELECT SUM(amt)/12 AS avg_monthly_sales FROM emp;
+
+Q18.Display average marks per subject.
+
+SELECT stud_name,marks,marks/5 AS avg_marks FROM emp;
+
+Q19.Display average order amount per item.
+
+SELECT order_id,(quantity/unit_price) / quantity AS avg_amt_price FROM emp;
+
+Q20.Display salary divided by years of experience.
+
+SELECT emp_name,sal,experience,sal/experience AS sal_pre_experience FROM emp;
+
+
+-> Modulus - MOD()
+
+
+Q21.Display employees whose employee ID is even.
+
+SELECT *FROM emp WHERE MOD(emp_id,2)=0;
+
+Q22.Display employees whose employee ID is odd.
+
+SELECT *FROM emp WHERE MOD(emp_id,2)=1;
+
+Q23.Display products whose quantity is divisible by 5.
+
+SELECT *FROM product WHERE MOD(quantity,5)=0
+
+Q24.Display students whose roll number is divisible by 3.
+
+SELECT *FROM stud WHERE MOD(roll,3)=0;
+
+Q25.Display orders where the order ID is a multiple of 10.
+
+SELECT *FROM orders WHERE MOD(order_id,10)=0;
+
+
+------------------------------- Intermediate (26–50) ---------------------------------------------
+
+
+Q26.Display annual salary including bonus.
+
+SELECT emp_name,(sal*12)+bonus AS anunal_sal FROM emp;
+
+Q27.Display annual salary after tax deduction.
+
+SELECT emp_name,(sal*12)-tax AS annual_sal FROM emp;
+
+Q28.Calculate 15% GST on every order.
+
+SELECT emp_name,quantity*unit_price, AS order_amt,
+(quantity*unit_price) *0.15 AS gst FROM orders;
+
+Q29.Display total payable amount:
+Order Amount
+GST
+Shipping Charge
+
+SELECT order_id,
+       (quantity * unit_price) +
+       ((quantity * unit_price) * 0.15) +
+       shipping_charge AS total_payable
+FROM orders;
+
+Q30.Display profit for every product:- Selling Price - Cost Price
+
+SELECT prod_name,selling_price,cost_price,selling_price-cost_price AS profit FROM product;
+
+Q31.Display profit percentage.
+
+SELECT prod_name,
+	   ((selling_price-cost_price)/cost_price) *100 AS profit_precentage FROM product;
+
+Q32.Display discount percentage.
+
+SELECT prod_name, (disc/selling_price)*100 AS disc_precentage FROM product;
+
+Q33.Calculate employee incentives based on salary.
+EXAMPLE - 10% incentives 
+SELECT emp_name,sal,sal*0.10 AS incentives FROM emp;
+
+Q34.Display employees whose annual salary exceeds 10,00,000.
+
+SELECT *FROM emp WHERE sal*12>100000;
+
+Q35.Display customers whose total purchase exceeds 50,000.
+
+SELECT cust_id,SUM(quantity*unit_price) AS total_purchase
+FROM orders
+GROUP BY cust_id
+HAVING SUM(quantity*unit_price) >50000;
+
+
+Q36.Display products whose stock value exceeds 1,00,000.
+
+SELECT prod_name,
+       selling_price * quantity AS stock_value
+FROM product
+WHERE selling_price * quantity > 100000;
+
+Q37.Display employees whose bonus is greater than 20% of salary.
+
+SELECT *FROM emp WHERE bonus > sal * 0.20;
+
+Q38.Display employees whose salary after bonus exceeds 75,000.
+
+SELECT *FROM emp WHERE sal + bonus > 75000;
+
+Q39.Display total revenue generated by each product.
+
+SELECT prod_id,
+       SUM(quantity * unit_price) AS total_revenue
+FROM orders
+GROUP BY prod_id;
+
+Q40.Display total revenue generated by each customer.
+
+SELECT cust_id,
+       SUM(quantity * unit_price) AS total_revenue
+FROM orders
+GROUP BY cust_id;
+
+Q41.Display average salary after adding bonuses.
+
+SELECT AVG(sal + bonus) AS average_salary FROM emp;
+
+Q42.Display departments where total salary exceeds 5,00,000.
+
+SELECT dep,
+       SUM(sal) AS total_salary
+FROM emp
+GROUP BY dep
+HAVING SUM(sal) > 500000;
+
+Q43.Display products with the highest inventory value.
+
+SELECT *
+FROM product
+WHERE selling_price * quantity =
+(
+    SELECT MAX(selling_price * quantity)
+    FROM product
+);
+
+Q44.Display orders with the highest payable amount.
+
+SELECT *
+FROM orders
+WHERE ((quantity * unit_price) + tax + shipping_charge) =
+(
+    SELECT MAX((quantity * unit_price) + tax + shipping_charge)
+    FROM orders
+);
+
+Q45.Display the difference between the highest and lowest salary.
+
+SELECT MAX(sal) - MIN(sal) AS salary_difference FROM emp;
+
+Q46.Display salary growth after a 10% increment.
+
+SELECT emp_name,sal,sal + (sal * 0.10) AS new_salary FROM emp;
+
+Q47.Display employees whose increment amount exceeds 8,000.
+
+SELECT *FROM emp WHERE sal * 0.10 > 8000;
+
+Q48.Display customers receiving a 5% loyalty discount.
+
+SELECT cust_id,
+       SUM(quantity * unit_price) AS purchase_amount,
+       SUM(quantity * unit_price) * 0.05 AS loyalty_discount
+FROM orders
+GROUP BY cust_id;
+
+Q49.Display tax collected for each order.
+
+SELECT order_id,tax FROM orders;
+
+Q50.Display net revenue after discounts.
+
+SELECT order_id,
+       (quantity * unit_price) - discount AS net_revenue
+FROM orders;
+
+----------------------------- Advanced (51–75) ---------------------------------------------------
+
+
+Q51.
+
+Display employees earning more than the average annual salary.
+
+Q52.
+
+Calculate salary after:
+
+Bonus
+Tax
+Insurance deduction
+Q53.
+
+Calculate yearly payroll for each department.
+
+Q54.
+
+Calculate payroll after bonuses.
+
+Q55.
+
+Display employees whose salary is at least 1.5 times the department average.
+
+Q56.
+
+Display products whose inventory value is greater than the company average.
+
+Q57.
+
+Calculate customer lifetime value.
+
+Q58.
+
+Calculate average order value per customer.
+
+Q59.
+
+Calculate revenue generated by each department.
+
+Q60.
+
+Display employees with the highest total compensation.
+
+Q61.
+
+Display products with the highest profit margin.
+
+Q62.
+
+Display top 5 customers based on purchase amount.
+
+Q63.
+
+Calculate running revenue.
+
+Q64.
+
+Calculate cumulative salary.
+
+Q65.
+
+Calculate moving average of monthly sales.
+
+Q66.
+
+Calculate year-over-year salary growth.
+
+Q67.
+
+Display salary percentage contribution to department payroll.
+
+Q68.Calculate employee salary as a percentage of company payroll.
+
+
+
+Q69.Display orders whose total amount is above the company average.
+
+
+
+Q70.Display employees whose annual salary equals the department maximum.
+
+
+
+Q71.Calculate project cost based on employee salaries.
+
+
+
+Q72.Calculate monthly profit after taxes and discounts.
+
+
+
+Q73.Display products whose selling price is at least 25% higher than cost price.
+
+
+
+Q74.Generate monthly revenue reports.
+
+
+
+Q75.Generate yearly financial summaries.
+
+
+
+----------------------- Frequently Asked Interview Questions --------------------------------------------------
+
+
+Q76.Calculate annual salary from monthly salary.
+
+
+
+Q77.Calculate monthly salary from annual salary.
+
+
+
+Q78.Calculate bonus as a percentage of salary.
+
+
+
+Q79.Calculate total compensation.
+
+
+
+Q80.Calculate total order value.
+
+
+
+Q81.Calculate profit and profit percentage.
+
+
+
+Q82.Calculate discount amount and final price.
+
+
+
+Q83.Calculate GST on every order.
+
+
+
+Q84.Find even and odd employee IDs using %.
+
+
+
+Q85.Find records where IDs are multiples of 5, 10, or 100.
+
+
+
+--------------    FAANG / Product-Based Interview Questions -----------------------------------------------------
+
+Q86.Calculate revenue for every product.
+
+
+
+Q87.Calculate revenue by category.
+
+
+
+Q88.Calculate monthly recurring revenue (MRR).
+
+
+
+Q89.Calculate average revenue per customer.
+
+
+
+Q90.Calculate customer lifetime value.
+
+
+
+Q91.Calculate gross profit and net profit.
+
+
+
+Q92.Calculate employee payroll including bonuses and deductions.
+
+
+
+Q93.Calculate inventory value for every warehouse.
+
+
+
+Q94.Generate a sales dashboard using arithmetic calculations.
+
+
+
+Q95.Write a report combining arithmetic operators, joins, aggregate functions, and window functions.
+
+
+
+->  Interview Theory Questions
+
+Be prepared to answer:
+
+Difference between arithmetic operators and aggregate functions.
+Difference between / and AVG().
+How does SQL handle division by zero?
+Can arithmetic operators be used in the WHERE clause?
+Can arithmetic operators be used in ORDER BY?
+Can arithmetic expressions be used with aggregate functions?
+Difference between % (modulus) and MOD() (Oracle commonly uses MOD()).
+Operator precedence in arithmetic expressions.
+Arithmetic operators with NULL values.
+Real-world business use cases for arithmetic operators.
+
+
+
+
+
+
+
+
+
+
